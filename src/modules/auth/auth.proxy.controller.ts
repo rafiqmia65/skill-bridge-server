@@ -1,58 +1,40 @@
 import { Request, Response } from "express";
-import { toNodeHandler } from "better-auth/node";
+import { authProxyService } from "./auth.proxy.service";
 import { auth } from "../../lib/auth";
 
-const BASE_URL = `${process.env.BACKEND_URL}/api/auth`;
+// POST /api/auth/register
+export const register = (req: Request, res: Response) => {
+  return authProxyService(req, res, "/sign-up/email");
+};
 
-// Proxy function for register/login
-async function proxy(req: Request, res: Response, path: string) {
+// POST /api/auth/login
+export const login = (req: Request, res: Response) => {
+  return authProxyService(req, res, "/sign-in/email");
+};
+
+// GET /api/auth/me → session return
+export const me = async (req: Request, res: Response) => {
   try {
-    const init: RequestInit = {
-      method: req.method,
-      headers: {
-        "Content-Type": "application/json",
-        origin: req.headers.origin ?? process.env.APP_URL ?? "",
-        cookie: req.headers.cookie ?? "",
-      },
-    };
+    const session = await auth.api.getSession({
+      headers: req.headers as any, // cookie from request
+    });
 
-    if (!["GET", "HEAD"].includes(req.method)) {
-      init.body = JSON.stringify(req.body);
+    if (!session) {
+      return res.status(401).json({
+        authenticated: false,
+        session: null,
+      });
     }
 
-    const response = await fetch(`${BASE_URL}${path}`, init);
-
-    // Forward Set-Cookie from Better Auth
-    const setCookie = response.headers.get("set-cookie");
-    if (setCookie) res.setHeader("set-cookie", setCookie);
-
-    const text = await response.text();
-    let data;
-    try {
-      data = text ? JSON.parse(text) : {};
-    } catch (e) {
-      data = { message: text || null };
-    }
-
-    res.status(response.status).json(data);
-  } catch (err: any) {
-    console.error(err);
-    res.status(500).json({ code: "PROXY_ERROR", message: err.message });
+    return res.status(200).json({
+      authenticated: true,
+      session,
+    });
+  } catch (error: any) {
+    console.error("GET SESSION ERROR:", error);
+    return res.status(500).json({
+      code: "SESSION_ERROR",
+      message: error.message,
+    });
   }
-}
-
-// Routes
-export const register = (req: Request, res: Response) =>
-  proxy(req, res, "/sign-up/email");
-
-export const login = (req: Request, res: Response) =>
-  proxy(req, res, "/sign-in/email");
-
-// GET /me → direct Better Auth session
-export const me = (req: Request, res: Response) => {
-  const originalUrl = req.url;
-  req.url = "/session"; // Better Auth expects /session
-  return toNodeHandler(auth)(req, res).finally(() => {
-    req.url = originalUrl; // restore
-  });
 };

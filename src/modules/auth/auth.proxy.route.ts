@@ -1,10 +1,13 @@
 import { Router, type Router as ExpressRouter } from "express";
-import { login, me, register } from "./auth.proxy.controller";
+import { register, login, me } from "./auth.proxy.controller";
 
 const router: ExpressRouter = Router();
 
+// proxy → Better Auth
 router.post("/register", register);
 router.post("/login", login);
-router.get("/me", me); // direct Better Auth session
+
+// session
+router.get("/me", me);
 
 export default router;
