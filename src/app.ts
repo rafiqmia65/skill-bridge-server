@@ -3,6 +3,8 @@ import cors from "cors";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth";
 import authProxyRoutes from "./modules/auth/auth.proxy.route";
+// import tutorRouter from "./modules/tutor/tutor.routes";
+import categoryRouter from "./modules/category/category.route";
 
 const app: Application = express();
 
@@ -21,6 +23,12 @@ app.use("/api/auth", authProxyRoutes);
 
 // Catch-all for Better Auth internal routes
 app.all("/api/auth/*split", toNodeHandler(auth));
+
+// Tutor api
+// app.use("/api/tutor", tutorRouter);
+
+// Category api
+app.use("/api/categories", categoryRouter);
 
 app.get("/", (req, res) => {
   res.json({
