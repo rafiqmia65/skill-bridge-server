@@ -1,0 +1,11 @@
+model Availability {
+    id        String   @id @default(uuid())
+    tutorId   String
+    day       String
+    startTime DateTime
+    endTime   DateTime
+
+    tutor TutorProfile @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+
+    @@map("availability")
+}
