@@ -1,6 +1,11 @@
 import { Request, Response } from "express";
 import * as CategoryService from "./category.service";
 
+/**
+ * @desc    Add a new category (Admin only)
+ * @route   POST /api/categories
+ * @access  Private (Admin)
+ */
 export const addCategory = async (req: Request, res: Response) => {
   try {
     const { name } = req.body;
@@ -25,10 +30,20 @@ export const addCategory = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @desc    List all categories (Public)
+ * @route   GET /api/categories
+ * @access  Public
+ */
 export const listCategories = async (req: Request, res: Response) => {
-  const categories = await CategoryService.getAllCategories();
-  res.status(200).json({
-    success: true,
-    data: categories,
-  });
+  try {
+    const categories = await CategoryService.getAllCategories();
+    res.status(200).json({
+      success: true,
+      message: "Categories retrieved successfully",
+      data: categories,
+    });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
