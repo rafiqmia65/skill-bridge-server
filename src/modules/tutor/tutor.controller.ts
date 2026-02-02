@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import * as TutorService from "./tutor.service";
 
-// Update tutor profile
+/**
+ * @desc    Create or update tutor profile
+ */
 export const upsertTutorProfile = async (req: Request, res: Response) => {
   const userId = req.user!.id;
   const payload = req.body;
@@ -15,11 +17,14 @@ export const upsertTutorProfile = async (req: Request, res: Response) => {
   });
 };
 
+/**
+ * @desc    Update tutor availability slots
+ */
 export const updateAvailabilityController = async (
   req: Request,
   res: Response,
 ) => {
-  const userId = req.user!.id; // USER ID
+  const userId = req.user!.id;
   const { slots } = req.body;
 
   const availability = await TutorService.updateAvailability(userId, slots);
@@ -28,5 +33,20 @@ export const updateAvailabilityController = async (
     success: true,
     message: "Availability updated successfully",
     data: availability,
+  });
+};
+
+/**
+ * @desc    Get all tutors (Public)
+ */
+export const getAllTutorsController = async (req: Request, res: Response) => {
+  const filters = req.query;
+
+  const tutors = await TutorService.getAllTutors(filters);
+
+  res.status(200).json({
+    success: true,
+    message: "Tutors retrieved successfully",
+    data: tutors,
   });
 };

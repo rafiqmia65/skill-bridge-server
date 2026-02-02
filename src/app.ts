@@ -5,6 +5,7 @@ import { auth } from "./lib/auth";
 import authProxyRoutes from "./modules/auth/auth.proxy.route";
 import tutorRouter from "./modules/tutor/tutor.routes";
 import categoryRouter from "./modules/category/category.route";
+import tutorsRouter from "./modules/tutor/tutors.route";
 
 const app: Application = express();
 
@@ -26,6 +27,9 @@ app.all("/api/auth/*split", toNodeHandler(auth));
 
 // Tutor api
 app.use("/api/tutor", tutorRouter);
+
+// Tutors api (Public Routes)
+app.use("/api/tutors", tutorsRouter);
 
 // Category api
 app.use("/api/categories", categoryRouter);
