@@ -1,5 +1,5 @@
 import { Router, type Router as ExpressRouter } from "express";
-import { getAllTutorsController } from "./tutor.controller";
+import { getAllTutorsController, getTutorByIdController } from "./tutor.controller";
 
 const tutorsRouter: ExpressRouter = Router();
 
@@ -9,5 +9,11 @@ const tutorsRouter: ExpressRouter = Router();
  * @access  Public
  */
 tutorsRouter.get("/", getAllTutorsController);
+
+/**
+ * @route   GET /api/tutors/:id
+ * @desc    Get single tutor details (Public)
+ */
+tutorsRouter.get("/:id", getTutorByIdController);
 
 export default tutorsRouter;

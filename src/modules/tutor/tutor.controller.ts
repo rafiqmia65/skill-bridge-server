@@ -50,3 +50,34 @@ export const getAllTutorsController = async (req: Request, res: Response) => {
     data: tutors,
   });
 };
+/**
+ * @desc    Get tutor details by ID
+ * @route   GET /api/tutors/:id
+ * @access  Public
+ */
+export const getTutorByIdController = async (req: Request, res: Response) => {
+  try {
+    const tutorId = req.params.id;
+
+    // Validate that tutorId is a string
+    if (!tutorId || Array.isArray(tutorId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid tutor ID",
+      });
+    }
+
+    const tutor = await TutorService.getTutorById(tutorId);
+
+    res.status(200).json({
+      success: true,
+      message: "Tutor retrieved successfully",
+      data: tutor,
+    });
+  } catch (error: any) {
+    res.status(404).json({
+      success: false,
+      message: error.message || "Tutor not found",
+    });
+  }
+};

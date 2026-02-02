@@ -144,3 +144,30 @@ export const getAllTutors = async (filters: any) => {
     },
   });
 };
+
+/**
+ * Get a single tutor by ID
+ * @param tutorId - TutorProfile ID
+ * @returns TutorProfile with user and categories
+ */
+export const getTutorById = async (tutorId: string) => {
+  const tutor = await prisma.tutorProfile.findUnique({
+    where: { id: tutorId },
+    include: {
+      user: {
+        select: {
+          name: true,
+          image: true,
+        },
+      },
+      categories: true,
+      availability: true, // Include availability slots if needed
+    },
+  });
+
+  if (!tutor) {
+    throw new Error("Tutor not found");
+  }
+
+  return tutor;
+};
