@@ -1,5 +1,5 @@
 import { Router, type Router as ExpressRouter } from "express";
-import { authorize } from "../middlewares/authorize";
+import { authorize } from "../../middlewares/authorize";
 import { Role } from "../../constants/role";
 import {
   createBookingController,

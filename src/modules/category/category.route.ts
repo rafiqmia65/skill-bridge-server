@@ -1,6 +1,6 @@
 import { Router, type Router as ExpressRouter } from "express";
 import * as CategoryController from "./category.controller";
-import { authorize } from "../middlewares/authorize";
+import { authorize } from "../../middlewares/authorize";
 
 const categoryRouter: ExpressRouter = Router();
 

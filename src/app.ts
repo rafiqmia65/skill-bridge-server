@@ -7,6 +7,7 @@ import tutorRouter from "./modules/tutor/tutor.routes";
 import categoryRouter from "./modules/category/category.route";
 import tutorsRouter from "./modules/tutor/tutors.route";
 import bookingRouter from "./modules/bookings/booking.route";
+import reviewRouter from "./modules/reviews/review.router";
 
 const app: Application = express();
 
@@ -37,6 +38,9 @@ app.use("/api/categories", categoryRouter);
 
 // Bookings api
 app.use("/api/bookings", bookingRouter);
+
+// Reviews api
+app.use("/api/reviews", reviewRouter);
 
 app.get("/", (req, res) => {
   res.json({
