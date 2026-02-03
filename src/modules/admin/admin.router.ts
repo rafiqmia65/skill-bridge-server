@@ -1,6 +1,9 @@
 import { Router, type Router as ExpressRouter } from "express";
 import { Role } from "../../constants/role";
-import { getAllUsersController } from "./admin.controller";
+import {
+  getAllUsersController,
+  updateUserStatusController,
+} from "./admin.controller";
 import { authorize } from "../../middlewares/authorize";
 
 const adminRouter: ExpressRouter = Router();
@@ -11,5 +14,16 @@ const adminRouter: ExpressRouter = Router();
  * @access  Private (Admin)
  */
 adminRouter.get("/users", authorize(Role.ADMIN), getAllUsersController);
+
+/**
+ * @route   PATCH /api/admin/users/:id
+ * @desc    Update user status (banned/unbanned)
+ * @access  Private (Admin)
+ */
+adminRouter.patch(
+  "/users/:id",
+  authorize(Role.ADMIN),
+  updateUserStatusController,
+);
 
 export default adminRouter;
