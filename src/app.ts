@@ -6,6 +6,7 @@ import authProxyRoutes from "./modules/auth/auth.proxy.route";
 import tutorRouter from "./modules/tutor/tutor.routes";
 import categoryRouter from "./modules/category/category.route";
 import tutorsRouter from "./modules/tutor/tutors.route";
+import bookingRouter from "./modules/bookings/booking.route";
 
 const app: Application = express();
 
@@ -33,6 +34,9 @@ app.use("/api/tutors", tutorsRouter);
 
 // Category api
 app.use("/api/categories", categoryRouter);
+
+// Bookings api
+app.use("/api/bookings", bookingRouter);
 
 app.get("/", (req, res) => {
   res.json({
