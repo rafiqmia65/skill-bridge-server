@@ -62,3 +62,24 @@ export const getMyBookings = async (studentId: string) => {
     },
   });
 };
+
+/** Get a single booking by ID */
+export const getBookingById = async (studentId: string, bookingId: string) => {
+  const booking = await prisma.booking.findFirst({
+    where: { id: bookingId, studentId },
+    include: {
+      tutorProfile: {
+        include: {
+          user: { select: { name: true, image: true } },
+          categories: true,
+        },
+      },
+    },
+  });
+
+  if (!booking) {
+    throw new Error("Booking not found");
+  }
+
+  return booking;
+};

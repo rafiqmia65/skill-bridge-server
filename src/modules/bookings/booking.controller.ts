@@ -31,3 +31,27 @@ export const getMyBookingsController = async (req: Request, res: Response) => {
     data: bookings,
   });
 };
+
+/**
+ * @desc   Get a single booking by ID
+ */
+export const getBookingByIdController = async (req: Request, res: Response) => {
+  const studentId = req.user!.id;
+  const bookingId = req.params.id;
+
+  // Type guard: ensure bookingId is a string
+  if (!bookingId || Array.isArray(bookingId)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid booking ID",
+    });
+  }
+
+  const booking = await BookingService.getBookingById(studentId, bookingId);
+
+  res.status(200).json({
+    success: true,
+    message: "Booking details retrieved successfully",
+    data: booking,
+  });
+};
