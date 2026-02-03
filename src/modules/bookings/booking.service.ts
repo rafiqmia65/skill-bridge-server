@@ -35,3 +35,30 @@ export const createBooking = async (
     },
   });
 };
+
+/**
+ * Get all bookings of a student
+ */
+export const getMyBookings = async (studentId: string) => {
+  return prisma.booking.findMany({
+    where: {
+      studentId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    include: {
+      tutorProfile: {
+        include: {
+          user: {
+            select: {
+              name: true,
+              image: true,
+            },
+          },
+          categories: true,
+        },
+      },
+    },
+  });
+};

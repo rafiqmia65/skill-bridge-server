@@ -16,3 +16,18 @@ export const createBookingController = async (req: Request, res: Response) => {
     data: booking,
   });
 };
+
+/**
+ * @desc    Get logged-in student's bookings
+ */
+export const getMyBookingsController = async (req: Request, res: Response) => {
+  const studentId = req.user!.id;
+
+  const bookings = await BookingService.getMyBookings(studentId);
+
+  res.status(200).json({
+    success: true,
+    message: "Bookings retrieved successfully",
+    data: bookings,
+  });
+};
