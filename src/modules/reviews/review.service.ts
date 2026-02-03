@@ -7,7 +7,10 @@ interface CreateReviewInput {
 }
 
 /**
- * Create a review for a booking
+ * @desc    Create a review for a booking
+ * @param   studentId ID of the student creating the review
+ * @param   data Review payload (bookingId, rating, comment)
+ * @returns Created review object
  */
 export const createReview = async (
   studentId: string,
@@ -15,12 +18,12 @@ export const createReview = async (
 ) => {
   const { bookingId, rating, comment } = data;
 
-  // Check if booking exists and belongs to the student
+  // Validate booking existence and ownership
   const booking = await prisma.booking.findUnique({
     where: { id: bookingId },
     include: {
-      tutorProfile: true,
-      review: true, // include review to check if it exists
+      tutorProfile: true, // include tutor info if needed
+      review: true, // check if a review already exists
     },
   });
 
@@ -42,7 +45,7 @@ export const createReview = async (
       bookingId,
       studentId,
       rating,
-      comment: comment || "", // ensure string
+      comment: comment || "", // ensure string for Prisma
     },
   });
 };

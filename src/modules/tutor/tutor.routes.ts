@@ -1,8 +1,7 @@
 import { Router, type Router as ExpressRouter } from "express";
 import {
-  getAllTutorsController,
-  updateAvailabilityController,
   upsertTutorProfile,
+  updateAvailabilityController,
 } from "./tutor.controller";
 import { authorize } from "../../middlewares/authorize";
 import { Role } from "../../constants/role";

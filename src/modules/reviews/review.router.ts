@@ -7,7 +7,7 @@ const reviewRouter: ExpressRouter = Router();
 
 /**
  * @route   POST /api/reviews
- * @desc    Create a review for a tutor
+ * @desc    Create a review for a booking (student can leave review after attending session)
  * @access  Private (Student)
  */
 reviewRouter.post("/", authorize(Role.STUDENT), createReviewController);

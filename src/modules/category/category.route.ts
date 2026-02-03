@@ -4,10 +4,18 @@ import { authorize } from "../../middlewares/authorize";
 
 const categoryRouter: ExpressRouter = Router();
 
-// Admin only route
+/**
+ * @route   POST /api/categories
+ * @desc    Add a new category
+ * @access  Private (Admin only)
+ */
 categoryRouter.post("/", authorize("ADMIN"), CategoryController.addCategory);
 
-// Public route to get categories
+/**
+ * @route   GET /api/categories
+ * @desc    Retrieve all categories
+ * @access  Public
+ */
 categoryRouter.get("/", CategoryController.listCategories);
 
 export default categoryRouter;

@@ -1,7 +1,7 @@
 import { prisma } from "../../lib/prisma.config";
 
 /**
- * Get all users
+ * @desc Get all users from the database
  */
 export const getAllUsers = async () => {
   return prisma.user.findMany({
@@ -10,6 +10,7 @@ export const getAllUsers = async () => {
       name: true,
       email: true,
       role: true,
+      isBanned: true,
       createdAt: true,
     },
     orderBy: {
@@ -19,7 +20,9 @@ export const getAllUsers = async () => {
 };
 
 /**
- * @desc    Update user status
+ * @desc Update the user status
+ * @param userId - ID of the user to update
+ * @param status - Either "ACTIVE" or "BANNED"
  */
 export const updateUserStatus = async (
   userId: string,

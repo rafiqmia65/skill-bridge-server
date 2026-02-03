@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import * as AdminService from "./admin.service";
 
 /**
- * @desc Get all users
+ * @desc Get all users (students & tutors)
  */
 export const getAllUsersController = async (req: Request, res: Response) => {
   const users = await AdminService.getAllUsers();
@@ -14,14 +14,17 @@ export const getAllUsersController = async (req: Request, res: Response) => {
 };
 
 /**
- * @desc    Update user status (ban/unban)
+ * @desc Update user status (ban/unban)
  */
 export const updateUserStatusController = async (
   req: Request,
   res: Response,
 ) => {
-  const userId = String(req.params.id); // Convert string | undefined to string
-  const { status } = req.body; // "ACTIVE" or "BANNED"
+  // Ensure req.params.id is a string
+  const userId = String(req.params.id);
+
+  // Status from request body, should be "ACTIVE" or "BANNED"
+  const { status } = req.body;
 
   const updatedUser = await AdminService.updateUserStatus(userId, status);
 

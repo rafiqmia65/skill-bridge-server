@@ -23,7 +23,7 @@ export const addCategory = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     if (error.code === "P2002") {
-      // Unique constraint failed
+      // Prisma unique constraint failed
       return res.status(400).json({ message: "Category already exists" });
     }
     res.status(500).json({ message: error.message });

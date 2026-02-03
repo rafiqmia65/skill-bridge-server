@@ -3,6 +3,8 @@ import * as TutorService from "./tutor.service";
 
 /**
  * @desc    Create or update tutor profile
+ * @route   PUT /api/tutor/profile
+ * @access  Private (Tutor)
  */
 export const upsertTutorProfile = async (req: Request, res: Response) => {
   const userId = req.user!.id;
@@ -19,6 +21,8 @@ export const upsertTutorProfile = async (req: Request, res: Response) => {
 
 /**
  * @desc    Update tutor availability slots
+ * @route   PUT /api/tutor/availability
+ * @access  Private (Tutor)
  */
 export const updateAvailabilityController = async (
   req: Request,
@@ -37,11 +41,12 @@ export const updateAvailabilityController = async (
 };
 
 /**
- * @desc    Get all tutors (Public)
+ * @desc    Get all tutors with optional filters
+ * @route   GET /api/tutors
+ * @access  Public
  */
 export const getAllTutorsController = async (req: Request, res: Response) => {
   const filters = req.query;
-
   const tutors = await TutorService.getAllTutors(filters);
 
   res.status(200).json({
@@ -50,21 +55,19 @@ export const getAllTutorsController = async (req: Request, res: Response) => {
     data: tutors,
   });
 };
+
 /**
- * @desc    Get tutor details by ID
+ * @desc    Get a single tutor by ID
  * @route   GET /api/tutors/:id
  * @access  Public
  */
 export const getTutorByIdController = async (req: Request, res: Response) => {
   try {
     const tutorId = req.params.id;
-
-    // Validate that tutorId is a string
     if (!tutorId || Array.isArray(tutorId)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid tutor ID",
-      });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid tutor ID" });
     }
 
     const tutor = await TutorService.getTutorById(tutorId);
@@ -75,9 +78,8 @@ export const getTutorByIdController = async (req: Request, res: Response) => {
       data: tutor,
     });
   } catch (error: any) {
-    res.status(404).json({
-      success: false,
-      message: error.message || "Tutor not found",
-    });
+    res
+      .status(404)
+      .json({ success: false, message: error.message || "Tutor not found" });
   }
 };

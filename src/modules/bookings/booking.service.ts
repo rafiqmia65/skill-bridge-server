@@ -6,7 +6,7 @@ interface CreateBookingInput {
 }
 
 /**
- * Create a new booking
+ * @desc    Create a new booking for a student with a tutor
  */
 export const createBooking = async (
   studentId: string,
@@ -14,7 +14,7 @@ export const createBooking = async (
 ) => {
   const { tutorProfileId, date } = data;
 
-  // Validate tutor profile
+  // Validate that tutor profile exists
   const tutorProfile = await prisma.tutorProfile.findUnique({
     where: { id: tutorProfileId },
     include: { user: true },
@@ -24,7 +24,7 @@ export const createBooking = async (
     throw new Error("Tutor profile not found");
   }
 
-  // Create booking
+  // Create the booking record
   return prisma.booking.create({
     data: {
       studentId,
@@ -37,25 +37,16 @@ export const createBooking = async (
 };
 
 /**
- * Get all bookings of a student
+ * @desc    Retrieve all bookings for a specific student
  */
 export const getMyBookings = async (studentId: string) => {
   return prisma.booking.findMany({
-    where: {
-      studentId,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
+    where: { studentId },
+    orderBy: { createdAt: "desc" },
     include: {
       tutorProfile: {
         include: {
-          user: {
-            select: {
-              name: true,
-              image: true,
-            },
-          },
+          user: { select: { name: true, image: true } },
           categories: true,
         },
       },
@@ -63,7 +54,9 @@ export const getMyBookings = async (studentId: string) => {
   });
 };
 
-/** Get a single booking by ID */
+/**
+ * @desc    Retrieve a single booking by ID for a student
+ */
 export const getBookingById = async (studentId: string, bookingId: string) => {
   const booking = await prisma.booking.findFirst({
     where: { id: bookingId, studentId },

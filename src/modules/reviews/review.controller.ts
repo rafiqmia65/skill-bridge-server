@@ -2,21 +2,30 @@ import { Request, Response } from "express";
 import * as ReviewService from "./review.service";
 
 /**
- * @desc    Create a review for a booking
+ * @desc    Controller to create a review
+ * @route   POST /api/reviews
+ * @access  Private (Student)
  */
 export const createReviewController = async (req: Request, res: Response) => {
-  const studentId = req.user!.id;
-  const { bookingId, rating, comment } = req.body;
+  try {
+    const studentId = req.user!.id; // authenticated student
+    const { bookingId, rating, comment } = req.body;
 
-  const review = await ReviewService.createReview(studentId, {
-    bookingId,
-    rating,
-    comment,
-  });
+    const review = await ReviewService.createReview(studentId, {
+      bookingId,
+      rating,
+      comment,
+    });
 
-  res.status(201).json({
-    success: true,
-    message: "Review submitted successfully",
-    data: review,
-  });
+    res.status(201).json({
+      success: true,
+      message: "Review submitted successfully",
+      data: review,
+    });
+  } catch (error: any) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };

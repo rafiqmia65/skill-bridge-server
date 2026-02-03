@@ -2,10 +2,10 @@ import { Request, Response } from "express";
 import * as BookingService from "./booking.service";
 
 /**
- * @desc    Create a new booking
+ * @desc    Handle creating a new booking
  */
 export const createBookingController = async (req: Request, res: Response) => {
-  const studentId = req.user!.id;
+  const studentId = req.user!.id; // logged-in student
   const payload = req.body;
 
   const booking = await BookingService.createBooking(studentId, payload);
@@ -18,7 +18,7 @@ export const createBookingController = async (req: Request, res: Response) => {
 };
 
 /**
- * @desc    Get logged-in student's bookings
+ * @desc    Handle fetching all bookings of the logged-in student
  */
 export const getMyBookingsController = async (req: Request, res: Response) => {
   const studentId = req.user!.id;
@@ -33,13 +33,13 @@ export const getMyBookingsController = async (req: Request, res: Response) => {
 };
 
 /**
- * @desc   Get a single booking by ID
+ * @desc    Handle fetching a single booking by ID
  */
 export const getBookingByIdController = async (req: Request, res: Response) => {
   const studentId = req.user!.id;
   const bookingId = req.params.id;
 
-  // Type guard: ensure bookingId is a string
+  // Ensure bookingId is valid
   if (!bookingId || Array.isArray(bookingId)) {
     return res.status(400).json({
       success: false,

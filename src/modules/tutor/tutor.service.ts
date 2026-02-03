@@ -1,26 +1,23 @@
 import { prisma } from "../../lib/prisma.config";
 
-/**
- * Tutor profile input type
- */
+/** -----------------------
+ * Types
+ * ----------------------- */
 interface TutorProfileInput {
   bio: string;
   pricePerHr: number;
   categoryIds: string[];
 }
 
-/**
- * Availability slot input type
- */
 interface AvailabilitySlot {
   day: string;
   startTime: string;
   endTime: string;
 }
 
-/**
+/** -----------------------
  * Create or update tutor profile
- */
+ * ----------------------- */
 export const upsertTutorProfile = async (
   userId: string,
   data: TutorProfileInput,
@@ -47,30 +44,24 @@ export const upsertTutorProfile = async (
   });
 };
 
-/**
+/** -----------------------
  * Update tutor availability slots
- */
+ * ----------------------- */
 export const updateAvailability = async (
   userId: string,
   slots: AvailabilitySlot[],
 ) => {
-  // Find tutor profile by logged-in user
   const tutorProfile = await prisma.tutorProfile.findUnique({
     where: { userId },
   });
-
-  if (!tutorProfile) {
-    throw new Error("Tutor profile not found");
-  }
+  if (!tutorProfile) throw new Error("Tutor profile not found");
 
   const tutorId = tutorProfile.id;
 
-  // Remove old availability slots
-  await prisma.availability.deleteMany({
-    where: { tutorId },
-  });
+  // Remove old slots
+  await prisma.availability.deleteMany({ where: { tutorId } });
 
-  // Create new availability slots
+  // Add new slots
   const createdSlots = await Promise.all(
     slots.map((slot) =>
       prisma.availability.create({
@@ -87,87 +78,49 @@ export const updateAvailability = async (
   return createdSlots;
 };
 
-/**
- * Get all tutors with optional filters (Public)
- */
+/** -----------------------
+ * Get all tutors with optional filters
+ * ----------------------- */
 export const getAllTutors = async (filters: any) => {
   const { search, category, minPrice, maxPrice, rating } = filters;
 
   return prisma.tutorProfile.findMany({
     where: {
-      // Search by tutor name
       ...(search && {
-        user: {
-          name: {
-            contains: search,
-            mode: "insensitive",
-          },
-        },
+        user: { name: { contains: search, mode: "insensitive" } },
       }),
-
-      // Filter by category
-      ...(category && {
-        categories: {
-          some: {
-            name: category,
-          },
-        },
-      }),
-
-      // Filter by price range
+      ...(category && { categories: { some: { name: category } } }),
       ...(minPrice || maxPrice
         ? {
             pricePerHr: {
-              gte: minPrice ? Number(minPrice) : undefined,
-              lte: maxPrice ? Number(maxPrice) : undefined,
+              gte: Number(minPrice) || undefined,
+              lte: Number(maxPrice) || undefined,
             },
           }
         : {}),
-
-      // Filter by rating
-      ...(rating && {
-        rating: {
-          gte: Number(rating),
-        },
-      }),
+      ...(rating && { rating: { gte: Number(rating) } }),
     },
-
     include: {
-      user: {
-        select: {
-          name: true,
-          image: true,
-        },
-      },
+      user: { select: { name: true, image: true } },
       categories: true,
       availability: true,
     },
   });
 };
 
-/**
- * Get a single tutor by ID
- * @param tutorId - TutorProfile ID
- * @returns TutorProfile with user and categories
- */
+/** -----------------------
+ * Get single tutor by ID
+ * ----------------------- */
 export const getTutorById = async (tutorId: string) => {
   const tutor = await prisma.tutorProfile.findUnique({
     where: { id: tutorId },
     include: {
-      user: {
-        select: {
-          name: true,
-          image: true,
-        },
-      },
+      user: { select: { name: true, image: true } },
       categories: true,
-      availability: true, // Include availability slots if needed
+      availability: true,
     },
   });
 
-  if (!tutor) {
-    throw new Error("Tutor not found");
-  }
-
+  if (!tutor) throw new Error("Tutor not found");
   return tutor;
 };
