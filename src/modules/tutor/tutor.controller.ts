@@ -45,15 +45,34 @@ export const updateAvailabilityController = async (
  * @route   GET /api/tutors
  * @access  Public
  */
-export const getAllTutorsController = async (req: Request, res: Response) => {
-  const filters = req.query;
-  const tutors = await TutorService.getAllTutors(filters);
 
-  res.status(200).json({
-    success: true,
-    message: "Tutors retrieved successfully",
-    data: tutors,
-  });
+export const getAllTutorsController = async (req: Request, res: Response) => {
+  try {
+    const { search, category, minPrice, maxPrice, rating, page, limit } =
+      req.query;
+
+    const filters: any = {
+      search: search as string,
+      category: category as string,
+      page: page ? Number(page) : 1,
+      limit: limit ? Number(limit) : 12,
+    };
+    if (minPrice !== undefined) filters.minPrice = Number(minPrice);
+    if (maxPrice !== undefined) filters.maxPrice = Number(maxPrice);
+    if (rating !== undefined) filters.rating = Number(rating);
+
+    const result = await TutorService.getAllTutors(filters);
+
+    res.status(200).json({
+      success: true,
+      message: "Tutors retrieved successfully",
+      ...result,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Something went wrong", error });
+  }
 };
 
 /**

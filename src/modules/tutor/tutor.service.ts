@@ -15,6 +15,16 @@ interface AvailabilitySlot {
   endTime: string;
 }
 
+export interface TutorFilters {
+  search?: string;
+  category?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  rating?: number;
+  page?: number;
+  limit?: number;
+}
+
 /** -----------------------
  * Create or update tutor profile
  * ----------------------- */
@@ -79,15 +89,21 @@ export const updateAvailability = async (
 };
 
 /** -----------------------
- * Get all tutors with optional filters
+ * Get all tutors with optional filters & pagination
  * ----------------------- */
-export const getAllTutors = async (filters: any) => {
-  const { search, category, minPrice, maxPrice, rating } = filters;
+export const getAllTutors = async (filters: TutorFilters) => {
+  const {
+    search,
+    category,
+    minPrice,
+    maxPrice,
+    rating,
+    page = 1,
+    limit = 12,
+  } = filters;
 
-  // Build the AND array
   const andConditions: any[] = [];
 
-  // Search filter: name or category
   if (search) {
     andConditions.push({
       OR: [
@@ -101,7 +117,6 @@ export const getAllTutors = async (filters: any) => {
     });
   }
 
-  // Category filter
   if (category) {
     andConditions.push({
       categories: {
@@ -110,7 +125,6 @@ export const getAllTutors = async (filters: any) => {
     });
   }
 
-  // Price filter
   if (minPrice || maxPrice) {
     andConditions.push({
       pricePerHr: {
@@ -120,27 +134,36 @@ export const getAllTutors = async (filters: any) => {
     });
   }
 
-  // Rating filter
   if (rating) {
-    andConditions.push({
-      rating: { gte: Number(rating) },
-    });
+    andConditions.push({ rating: { gte: Number(rating) } });
   }
 
-  // Build the where object
   const where: any = {};
-  if (andConditions.length > 0) {
-    where.AND = andConditions;
-  }
+  if (andConditions.length) where.AND = andConditions;
 
-  return prisma.tutorProfile.findMany({
-    where, // only add AND if there are conditions
+  const total = await prisma.tutorProfile.count({ where });
+
+  const tutors = await prisma.tutorProfile.findMany({
+    where,
     include: {
       user: { select: { name: true, image: true } },
       categories: true,
       availability: true,
     },
+    skip: (page - 1) * limit,
+    take: limit,
+    orderBy: { createdAt: "desc" },
   });
+
+  return {
+    tutors,
+    meta: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
 
 /** -----------------------
