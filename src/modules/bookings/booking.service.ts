@@ -76,3 +76,23 @@ export const getBookingById = async (studentId: string, bookingId: string) => {
 
   return booking;
 };
+
+/**
+ * @desc Retrieve all bookings (Admin only)
+ */
+export const getAllBookings = async () => {
+  return prisma.booking.findMany({
+    orderBy: { createdAt: "desc" },
+    include: {
+      tutorProfile: {
+        include: {
+          user: { select: { name: true, image: true } },
+          categories: true,
+        },
+      },
+      student: {
+        select: { id: true, name: true, email: true },
+      },
+    },
+  });
+};

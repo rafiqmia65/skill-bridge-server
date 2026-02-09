@@ -3,6 +3,7 @@ import { authorize } from "../../middlewares/authorize";
 import { Role } from "../../constants/role";
 import {
   createBookingController,
+  getAllBookingsController,
   getBookingByIdController,
   getMyBookingsController,
 } from "./booking.controller";
@@ -22,6 +23,13 @@ bookingRouter.post("/", authorize(Role.STUDENT), createBookingController);
  * @access  Private (Student only)
  */
 bookingRouter.get("/", authorize(Role.STUDENT), getMyBookingsController);
+
+/**
+ * @route   GET /api/bookings/admin
+ * @desc    Admin: Get all bookings
+ * @access  Private (Admin only)
+ */
+bookingRouter.get("/admin", authorize(Role.ADMIN), getAllBookingsController);
 
 /**
  * @route   GET /api/bookings/:id

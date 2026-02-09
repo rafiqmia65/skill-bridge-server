@@ -55,3 +55,21 @@ export const getBookingByIdController = async (req: Request, res: Response) => {
     data: booking,
   });
 };
+
+/**
+ * @desc Admin: Get all bookings
+ */
+export const getAllBookingsController = async (req: Request, res: Response) => {
+  try {
+    const bookings = await BookingService.getAllBookings();
+    console.log("Admin bookings fetched:", bookings); 
+    res.status(200).json({
+      success: true,
+      message: "All bookings retrieved successfully",
+      data: bookings,
+    });
+  } catch (err) {
+    console.error("Error fetching admin bookings:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
