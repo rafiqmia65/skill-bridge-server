@@ -2,58 +2,79 @@ import { Request, Response } from "express";
 import * as BookingService from "./booking.service";
 
 /**
- * @desc    Handle creating a new booking
+ * @desc Create a new booking
  */
 export const createBookingController = async (req: Request, res: Response) => {
-  const studentId = req.user!.id; // logged-in student
-  const payload = req.body;
+  try {
+    const studentId = req.user!.id;
+    const { tutorProfileId, date } = req.body;
 
-  const booking = await BookingService.createBooking(studentId, payload);
+    if (!tutorProfileId || !date) {
+      return res.status(400).json({
+        success: false,
+        message: "tutorProfileId and date are required",
+      });
+    }
 
-  res.status(201).json({
-    success: true,
-    message: "Booking created successfully",
-    data: booking,
-  });
+    const booking = await BookingService.createBooking(studentId, {
+      tutorProfileId,
+      date,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Booking created successfully",
+      data: booking,
+    });
+  } catch (err: any) {
+    res.status(400).json({ success: false, message: err.message });
+  }
 };
 
 /**
- * @desc    Handle fetching all bookings of the logged-in student
+ * @desc Get all bookings of logged-in student
  */
 export const getMyBookingsController = async (req: Request, res: Response) => {
-  const studentId = req.user!.id;
+  try {
+    const studentId = req.user!.id;
+    const bookings = await BookingService.getMyBookings(studentId);
 
-  const bookings = await BookingService.getMyBookings(studentId);
-
-  res.status(200).json({
-    success: true,
-    message: "Bookings retrieved successfully",
-    data: bookings,
-  });
+    res.status(200).json({
+      success: true,
+      message: "Bookings retrieved successfully",
+      data: bookings,
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 };
 
 /**
- * @desc    Handle fetching a single booking by ID
+ * @desc Get single booking by ID
  */
 export const getBookingByIdController = async (req: Request, res: Response) => {
-  const studentId = req.user!.id;
-  const bookingId = req.params.id;
+  try {
+    const studentId = req.user!.id;
+    const bookingId = Array.isArray(req.params.id)
+      ? req.params.id[0]
+      : req.params.id;
 
-  // Ensure bookingId is valid
-  if (!bookingId || Array.isArray(bookingId)) {
-    return res.status(400).json({
-      success: false,
-      message: "Invalid booking ID",
+    if (!bookingId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Booking ID is required" });
+    }
+
+    const booking = await BookingService.getBookingById(studentId, bookingId);
+
+    res.status(200).json({
+      success: true,
+      message: "Booking details retrieved successfully",
+      data: booking,
     });
+  } catch (err: any) {
+    res.status(404).json({ success: false, message: err.message });
   }
-
-  const booking = await BookingService.getBookingById(studentId, bookingId);
-
-  res.status(200).json({
-    success: true,
-    message: "Booking details retrieved successfully",
-    data: booking,
-  });
 };
 
 /**
@@ -67,7 +88,7 @@ export const getAllBookingsController = async (req: Request, res: Response) => {
       message: "All bookings retrieved successfully",
       data: bookings,
     });
-  } catch (err) {
-    res.status(500).json({ success: false, message: "Internal server error" });
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message });
   }
 };
