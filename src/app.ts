@@ -11,6 +11,7 @@ import categoryRouter from "./modules/category/category.route";
 import bookingRouter from "./modules/bookings/booking.route";
 import reviewRouter from "./modules/reviews/review.router";
 import adminRouter from "./modules/admin/admin.router";
+import studentRouter from "./modules/student/student.router";
 
 const app: Application = express();
 
@@ -73,6 +74,11 @@ app.use("/api/reviews", reviewRouter);
  * Admin routes (Admin-only access)
  */
 app.use("/api/admin", adminRouter);
+
+/**
+ * student routes (student-only access)
+ */
+app.use("/api/student", studentRouter);
 
 /**
  * Health check route
