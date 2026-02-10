@@ -102,3 +102,30 @@ export const getTutorByIdController = async (req: Request, res: Response) => {
       .json({ success: false, message: error.message || "Tutor not found" });
   }
 };
+
+/**
+ * @desc    Get tutor dashboard stats & sessions
+ * @route   GET /api/tutor/dashboard
+ * @access  Private (Tutor)
+ */
+export const getTutorDashboardController = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const userId = req.user!.id; // from token
+
+    const dashboardData = await TutorService.getTutorDashboard(userId);
+
+    res.status(200).json({
+      success: true,
+      message: "Tutor dashboard data retrieved successfully",
+      data: dashboardData,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to load tutor dashboard",
+    });
+  }
+};

@@ -2,6 +2,7 @@ import { Router, type Router as ExpressRouter } from "express";
 import {
   upsertTutorProfile,
   updateAvailabilityController,
+  getTutorDashboardController,
 } from "./tutor.controller";
 import { authorize } from "../../middlewares/authorize";
 import { Role } from "../../constants/role";
@@ -24,6 +25,15 @@ tutorRouter.put(
   "/availability",
   authorize(Role.TUTOR),
   updateAvailabilityController,
+);
+
+/**
+ * @route   GET /api/tutor/dashboard
+ */
+tutorRouter.get(
+  "/dashboard",
+  authorize(Role.TUTOR),
+  getTutorDashboardController,
 );
 
 export default tutorRouter;

@@ -182,3 +182,91 @@ export const getTutorById = async (tutorId: string) => {
   if (!tutor) throw new Error("Tutor not found");
   return tutor;
 };
+
+/** -----------------------
+ * Dashboard Overview
+ * ----------------------- */
+export const getTutorDashboard = async (userId: string) => {
+  // Tutor profile + categories + availability
+  const tutorProfile = await prisma.tutorProfile.findUnique({
+    where: { userId },
+    include: {
+      categories: true,
+      availability: true,
+      user: { select: { name: true, email: true, image: true } },
+    },
+  });
+
+  if (!tutorProfile) throw new Error("Tutor profile not found");
+
+  // Fetch bookings with student and review
+  const bookings = await prisma.booking.findMany({
+    where: { tutorId: userId },
+    include: {
+      student: { select: { name: true, email: true } },
+      review: true,
+    },
+    orderBy: { date: "desc" },
+  });
+
+  // Compute stats
+  const availabilityCount = tutorProfile.availability.length;
+  const totalSessions = bookings.length + availabilityCount; // include availability
+  const upcomingSessions =
+    bookings.filter((b) => b.status === "CONFIRMED").length + availabilityCount; // treat all slots as upcoming
+  const completedSessions = bookings.filter(
+    (b) => b.status === "COMPLETED",
+  ).length;
+  const cancelledSessions = bookings.filter(
+    (b) => b.status === "CANCELLED",
+  ).length;
+  const totalEarnings = completedSessions * tutorProfile.pricePerHr;
+
+  // Recent reviews
+  const reviews = bookings
+    .filter((b) => b.review)
+    .map((b) => ({
+      id: b.review!.id,
+      rating: b.review!.rating,
+      comment: b.review!.comment,
+      studentName: b.student.name,
+      date: b.review!.createdAt,
+    }));
+
+  // Response
+  return {
+    profile: {
+      name: tutorProfile.user.name,
+      email: tutorProfile.user.email,
+      image: tutorProfile.user.image,
+      bio: tutorProfile.bio,
+      pricePerHr: tutorProfile.pricePerHr,
+      rating: tutorProfile.rating,
+      categories: tutorProfile.categories.map((c) => c.name),
+      availability: tutorProfile.availability.map((a) => ({
+        day: a.day,
+        startTime: a.startTime,
+        endTime: a.endTime,
+      })),
+    },
+    stats: {
+      totalSessions,
+      upcomingSessions,
+      completedSessions,
+      cancelledSessions,
+      totalEarnings,
+      rating: tutorProfile.rating,
+    },
+    upcomingSessions: bookings.filter((b) => b.status === "CONFIRMED"),
+    recentSessions: bookings.slice(0, 5).map((b) => ({
+      id: b.id,
+      studentName: b.student.name,
+      date: b.date,
+      status: b.status,
+      review: b.review
+        ? { rating: b.review.rating, comment: b.review.comment }
+        : null,
+    })),
+    reviews,
+  };
+};
