@@ -1,11 +1,21 @@
 import { Router, type Router as ExpressRouter } from "express";
 import { authorize } from "../../middlewares/authorize";
 import { Role } from "../../constants/role";
-import { getStudentProfileController } from "./student.controller";
+import {
+  getStudentProfileController,
+  updateStudentProfileController,
+} from "./student.controller";
 
 const studentRouter: ExpressRouter = Router();
 
-// Student profile routes
+// PUT update student profile
+studentRouter.put(
+  "/updateProfile",
+  authorize(Role.STUDENT),
+  updateStudentProfileController,
+);
+
+// GET student profile
 studentRouter.get(
   "/profile",
   authorize(Role.STUDENT),
