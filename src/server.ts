@@ -3,20 +3,20 @@ import app from "./app";
 import { prisma } from "./lib/prisma.config";
 import { logger } from "better-auth";
 
-const port = process.env.PORT || 5000;
+const port = parseInt(process.env.PORT || "5000", 10); // parseInt
+const HOST = "0.0.0.0"; // Render MUST
 
 async function main() {
   try {
     await prisma.$connect();
-    console.log("Connect to the database successfully");
+    console.log("✅ Database connected");
 
-    if (process.env.NODE_ENV !== "production") {
-      app.listen(port, () => {
-        logger.info(`Server running on port ${port}`);
-      });
-    }
+    // Production- listen
+    app.listen(port, HOST, () => {
+      logger.info(`🚀 Server running on http://${HOST}:${port}`);
+    });
   } catch (error: any) {
-    logger.error("Error starting server:", error);
+    logger.error("❌ Error starting server:", error);
     process.exit(1);
   }
 }
