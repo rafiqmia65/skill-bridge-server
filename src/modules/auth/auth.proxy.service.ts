@@ -1,57 +1,56 @@
-import { Request, Response } from "express";
+import type {
+  Request as ExpressRequest,
+  Response as ExpressResponse,
+} from "express";
 
 /**
- * Base URL for the backend Better Auth API
+ * Better Auth backend base URL
+ * example: https://your-backend.vercel.app
  */
 const BASE_URL = `${process.env.BACKEND_URL}/api/auth`;
 
-/**
- * @desc    Generic proxy service to forward requests to Better Auth backend
- * @param   req - Express request object
- * @param   res - Express response object
- * @param   path - Backend API path (e.g., /sign-up/email)
- */
+type FetchRequestInit = globalThis.RequestInit;
+
 export async function authProxyService(
-  req: Request,
-  res: Response,
+  req: ExpressRequest,
+  res: ExpressResponse,
   path: string,
 ) {
   try {
-    const init: RequestInit = {
+    const init: FetchRequestInit = {
       method: req.method,
       headers: {
         "Content-Type": "application/json",
 
-        // Required by Better Auth for CORS
+        // required for CORS + cookies
         origin: req.headers.origin ?? process.env.APP_URL ?? "",
 
-        // Forward session cookies
+        // forward cookies to Better Auth
         cookie: req.headers.cookie ?? "",
       },
     };
 
-    // Include body for non-GET/HEAD requests
+    // attach body for non-GET requests
     if (!["GET", "HEAD"].includes(req.method)) {
       init.body = JSON.stringify(req.body);
     }
 
-    // Forward the request to Better Auth backend
     const response = await fetch(`${BASE_URL}${path}`, init);
 
-    // Forward "set-cookie" headers if backend sets a session cookie
+    // forward session cookie back to browser
     const setCookie = response.headers.get("set-cookie");
     if (setCookie) {
       res.setHeader("set-cookie", setCookie);
     }
 
-    // Parse the response safely
+    // safely parse response
     const text = await response.text();
-    let data: any;
+    let data: any = {};
 
     try {
       data = text ? JSON.parse(text) : {};
     } catch {
-      data = { message: text || null };
+      data = { message: text };
     }
 
     return res.status(response.status).json(data);
