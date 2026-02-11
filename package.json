@@ -2,12 +2,15 @@
   "name": "skill-bridge-server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx tsx watch src/server.ts",
     "build": "prisma generate && tsc"
+  },
+  "engines": {
+    "node": "20.18.0"
   },
   "keywords": [],
   "author": "",
