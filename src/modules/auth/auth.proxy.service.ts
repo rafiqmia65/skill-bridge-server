@@ -15,18 +15,18 @@ export async function authProxyService(
   req: ExpressRequest,
   res: ExpressResponse,
   path: string,
-) {
+): Promise<ExpressResponse> {
   try {
     const init: FetchRequestInit = {
       method: req.method,
       headers: {
         "Content-Type": "application/json",
-
-        // required for CORS + cookies
         origin: req.headers.origin ?? process.env.APP_URL ?? "",
-
-        // forward cookies to Better Auth
         cookie: req.headers.cookie ?? "",
+        // optional: authorization header forward
+        ...(req.headers.authorization && {
+          authorization: req.headers.authorization,
+        }),
       },
     };
 
@@ -40,25 +40,29 @@ export async function authProxyService(
     // forward session cookie back to browser
     const setCookie = response.headers.get("set-cookie");
     if (setCookie) {
-      res.setHeader("set-cookie", setCookie);
+      res.setHeader("Set-Cookie", setCookie);
     }
 
-    // safely parse response
+    // safely parse response - NO 'any' type
     const text = await response.text();
-    let data: any = {};
+    let data: Record<string, unknown> = {};
 
     try {
-      data = text ? JSON.parse(text) : {};
+      data = text ? (JSON.parse(text) as Record<string, unknown>) : {};
     } catch {
       data = { message: text };
     }
 
     return res.status(response.status).json(data);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("AUTH PROXY SERVICE ERROR:", error);
+
+    const errorMessage =
+      error instanceof Error ? error.message : "Internal server error";
+
     return res.status(500).json({
       code: "PROXY_ERROR",
-      message: error.message,
+      message: errorMessage,
     });
   }
 }
