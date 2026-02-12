@@ -3,7 +3,7 @@ services:
     name: skill-bridge-server
     runtime: node
     buildCommand: npm install && npm run build
-    startCommand: node dist/server.js 
+    startCommand: node dist/server.js
     envVars:
       - key: NODE_VERSION
-        value: 24.11.0
+        value: 22.12.0
