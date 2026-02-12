@@ -13,7 +13,7 @@
     // "types": [],
     // For nodejs:
     "lib": ["esnext"],
-    // "types": ["node"],
+    "types": ["node"],
     // and npm install -D @types/node
 
     // Other Outputs
@@ -44,6 +44,6 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true
   },
-   "include": ["src/**/*", "prisma/**/*", "generated/**/*"],
+  "include": ["src/**/*", "prisma/**/*", "generated/**/*"],
   "exclude": ["node_modules", "dist", "generated"]
 }
