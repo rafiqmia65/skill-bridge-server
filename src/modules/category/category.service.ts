@@ -1,4 +1,4 @@
-import { prisma } from "../../lib/prisma.config";
+import { prisma } from "../../lib/prisma";
 
 /**
  * @desc    Create a new category in the database

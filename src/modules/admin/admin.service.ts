@@ -1,4 +1,4 @@
-import { prisma } from "../../lib/prisma.config";
+import { prisma } from "../../lib/prisma";
 
 /**
  * @desc Get all users from the database

@@ -1,7 +1,6 @@
 import "dotenv/config";
 import app from "./app";
-import { prisma } from "./lib/prisma.config";
-import { logger } from "better-auth";
+import { prisma } from "./lib/prisma";
 
 const port = parseInt(process.env.PORT || "5000", 10); // parseInt
 const HOST = "0.0.0.0"; // Render MUST
@@ -13,10 +12,10 @@ async function main() {
 
     // Production- listen
     app.listen(port, HOST, () => {
-      logger.info(`🚀 Server running on http://${HOST}:${port}`);
+      console.log(`🚀 Server running on http://${HOST}:${port}`);
     });
   } catch (error: any) {
-    logger.error("❌ Error starting server:", error);
+    console.error("❌ Error starting server:", error);
     process.exit(1);
   }
 }

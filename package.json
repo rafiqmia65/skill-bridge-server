@@ -7,9 +7,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx tsx watch src/server.ts",
-    "build": "prisma generate && tsup src/server.ts --format esm --clean --out-dir dist",
+    "build": "prisma generate --schema=./prisma/schema/schema.prisma && tsup src/server.ts --format esm --clean --out-dir dist",
     "start": "node dist/server.js",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate --schema=./prisma/schema/schema.prisma"
   },
   "engines": {
     "node": "24.11.0"
@@ -34,6 +34,7 @@
     "cors": "^2.8.6",
     "dotenv": "^16.4.7",
     "express": "^5.2.1",
-    "pg": "^8.17.2"
+    "pg": "^8.17.2",
+    "save-dev": "0.0.1-security"
   }
 }
