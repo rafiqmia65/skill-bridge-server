@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import * as BookingService from "./booking.service";
+import * as BookingService from "./booking.service.js";
 
 /**
  * @desc Create a new booking

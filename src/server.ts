@@ -1,7 +1,6 @@
 import "dotenv/config";
-import { type Application } from "express";
-import app from "./app";
-import { prisma } from "./lib/prisma";
+import app from "./app.js";
+import { prisma } from "./lib/prisma.js";
 const port = process.env.PORT || 5000;
 // const port = parseInt(process.env.PORT || "5000", 10); // parseInt
 // const HOST = "0.0.0.0"; // Render MUST

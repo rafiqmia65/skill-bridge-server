@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { StudentProfileService } from "./student.service";
+import { StudentProfileService } from "./student.service.js";
 
 /**
  * GET /api/student/profile

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { register, login, me } from "./auth.proxy.controller";
+import { login, me, register } from "./auth.proxy.controller.js";
 
 const authProxyRouter = Router();
 

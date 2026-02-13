@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { authorize } from "../../middlewares/authorize";
-import { Role } from "../../constants/role";
+import { authorize } from "../../middlewares/authorize.js";
+import { Role } from "../../constants/role.js";
 import {
   getStudentProfileController,
   updateStudentProfileController,
-} from "./student.controller";
+} from "./student.controller.js";
 
 const studentRouter = Router();
 

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import * as CategoryService from "./category.service";
+import * as CategoryService from "./category.service.js";
 
 /**
  * @desc    Add a new category (Admin only)

@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { authorize } from "../../middlewares/authorize";
-import { Role } from "../../constants/role";
+import { authorize } from "../../middlewares/authorize.js";
+import { Role } from "../../constants/role.js";
 import {
   createBookingController,
   getAllBookingsController,
   getBookingByIdController,
   getMyBookingsController,
-} from "./booking.controller";
+} from "./booking.controller.js";
 
 const bookingRouter = Router();
 

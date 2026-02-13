@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import * as AdminService from "./admin.service";
+import * as AdminService from "./admin.service.js";
 
 /**
  * @desc Get all users (students & tutors)

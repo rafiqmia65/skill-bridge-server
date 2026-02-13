@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import * as ReviewService from "./review.service";
+import * as ReviewService from "./review.service.js";
 
 /**
  * @desc    Controller to create a review

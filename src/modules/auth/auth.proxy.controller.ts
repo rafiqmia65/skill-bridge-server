@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { authProxyService } from "./auth.proxy.service";
-import { auth } from "../../lib/auth";
+import { authProxyService } from "./auth.proxy.service.js";
+import { auth } from "../../lib/auth.js";
 
 /**
  * @desc    Proxy register request to Better Auth

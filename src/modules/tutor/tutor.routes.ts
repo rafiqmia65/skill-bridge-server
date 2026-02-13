@@ -1,11 +1,7 @@
 import { Router } from "express";
-import {
-  upsertTutorProfile,
-  updateAvailabilityController,
-  getTutorDashboardController,
-} from "./tutor.controller";
-import { authorize } from "../../middlewares/authorize";
-import { Role } from "../../constants/role";
+import { authorize } from "../../middlewares/authorize.js";
+import { Role } from "../../constants/role.js";
+import { getTutorDashboardController, updateAvailabilityController, upsertTutorProfile } from "./tutor.controller.js";
 
 const tutorRouter = Router();
 

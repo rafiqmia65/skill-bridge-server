@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import * as TutorService from "./tutor.service";
+import * as TutorService from "./tutor.service.js";
 
 /**
  * @desc    Create or update tutor profile

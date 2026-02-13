@@ -7,14 +7,13 @@
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "ESNext",
-    "moduleResolution": "bundler",
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
     "customConditions": ["node"],
     "target": "ES2023",
-    // "types": [],
+    "types": ["node"],
     // For nodejs:
-    "lib": ["esnext", "dom"],
-    "typeRoots": ["./node_modules/@types"],
+    "lib": ["esnext"],
     // Other Outputs
     "sourceMap": true,
     "declaration": true,
@@ -43,6 +42,11 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*", "prisma/**/*", "generated/**/*"],
+  "include": [
+    "src/**/*",
+    "prisma/**/*",
+    "generated/**/*",
+    "types/express.d.ts"
+  ],
   "exclude": ["node_modules", "dist"]
 }

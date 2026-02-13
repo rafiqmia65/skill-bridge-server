@@ -1,19 +1,19 @@
-import express, { type Application, type Request, type Response } from "express";
+import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import { toNodeHandler } from "better-auth/node";
-import { auth } from "./lib/auth";
+import { auth } from "./lib/auth.js";
 
 // Import routers
-import authProxyRoutes from "./modules/auth/auth.proxy.route";
-import tutorRouter from "./modules/tutor/tutor.routes";
-import tutorsRouter from "./modules/tutor/tutors.route";
-import categoryRouter from "./modules/category/category.route";
-import bookingRouter from "./modules/bookings/booking.route";
-import reviewRouter from "./modules/reviews/review.router";
-import adminRouter from "./modules/admin/admin.router";
-import studentRouter from "./modules/student/student.router";
+import authProxyRoutes from "./modules/auth/auth.proxy.route.js";
+import tutorRouter from "./modules/tutor/tutor.routes.js";
+import tutorsRouter from "./modules/tutor/tutors.route.js";
+import categoryRouter from "./modules/category/category.route.js";
+import bookingRouter from "./modules/bookings/booking.route.js";
+import reviewRouter from "./modules/reviews/review.router.js";
+import adminRouter from "./modules/admin/admin.router.js";
+import studentRouter from "./modules/student/student.router.js";
 
-const app: any = express();
+const app: Application = express();
 
 /**
  * Middleware to parse incoming requests with JSON payloads

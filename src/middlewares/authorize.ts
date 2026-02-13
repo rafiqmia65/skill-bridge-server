@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { auth } from "../lib/auth";
+import { auth } from "../lib/auth.js";
 
 type Role = "ADMIN" | "TUTOR" | "STUDENT";
 

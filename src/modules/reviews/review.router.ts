@@ -1,7 +1,7 @@
 import express, { Router } from "express";
-import { Role } from "../../constants/role";
-import { authorize } from "../../middlewares/authorize";
-import { createReviewController } from "./review.controller";
+import { Role } from "../../constants/role.js";
+import { authorize } from "../../middlewares/authorize.js";
+import { createReviewController } from "./review.controller.js";
 
 const reviewRouter = Router();
 
