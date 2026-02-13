@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { type Request, type Response, type NextFunction } from "express";
 import { auth } from "../lib/auth";
 
 type Role = "ADMIN" | "TUTOR" | "STUDENT";
@@ -9,31 +9,34 @@ type Role = "ADMIN" | "TUTOR" | "STUDENT";
  */
 export const authorize =
   (...allowedRoles: Role[]) =>
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      //  Get session from headers (Postman) or cookies (browser)
+      // Get session from headers (Postman) or cookies (browser)
       const session = await auth.api.getSession({
         headers: req.headers as any, // pass cookies or auth headers
       });
 
       if (!session || !session.user) {
-        return res.status(401).json({ message: "Unauthorized" });
+        res.status(401).json({ message: "Unauthorized" });
+        return; // Make sure to return after sending response
       }
 
-      // attach user to request
-      (req.user as any) = session.user;
+      // attach user to request - now properly typed
+      req.user = session.user;
 
       // Check allowed roles
-      if (!req.user || !allowedRoles.includes(req.user.role)) {
-        return res
+      if (!req.user || !allowedRoles.includes(req.user.role as Role)) {
+        res
           .status(403)
           .json({ message: "Forbidden: insufficient permissions" });
+        return;
       }
 
       // Everything ok
       next();
     } catch (error) {
       console.error("Authorize middleware error:", error);
-      return res.status(401).json({ message: "Unauthorized" });
+      res.status(401).json({ message: "Unauthorized" });
+      return;
     }
   };

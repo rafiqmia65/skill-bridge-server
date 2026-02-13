@@ -7,7 +7,7 @@ import {
 import { authorize } from "../../middlewares/authorize";
 import { Role } from "../../constants/role";
 
-const tutorRouter: ExpressRouter = Router();
+const tutorRouter = Router();
 
 /**
  * @route   PUT /api/tutor/profile

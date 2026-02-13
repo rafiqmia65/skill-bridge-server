@@ -4,7 +4,7 @@ import {
   getTutorByIdController,
 } from "./tutor.controller";
 
-const tutorsRouter: ExpressRouter = Router();
+const tutorsRouter = Router();
 
 /**
  * @route   GET /api/tutors

@@ -9,13 +9,14 @@
     // See also https://aka.ms/tsconfig/module
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "customConditions": ["node"],
     "target": "ES2023",
     // "types": [],
     // For nodejs:
     "lib": ["esnext"],
     "types": ["node"],
     // and npm install -D @types/node
-
+    "typeRoots": ["./node_modules/@types", "./types"],
     // Other Outputs
     "sourceMap": true,
     "declaration": true,
@@ -44,6 +45,6 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*", "prisma/**/*", "generated/**/*"],
+  "include": ["src/**/*", "prisma/**/*", "generated/**/*", "./types/**/*"],
   "exclude": ["node_modules", "dist", "generated"]
 }

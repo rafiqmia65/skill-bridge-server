@@ -8,7 +8,7 @@ import {
   getMyBookingsController,
 } from "./booking.controller";
 
-const bookingRouter: ExpressRouter = Router();
+const bookingRouter = Router();
 
 /**
  * @route   POST /api/bookings

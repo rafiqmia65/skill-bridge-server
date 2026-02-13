@@ -6,7 +6,7 @@ import {
   updateStudentProfileController,
 } from "./student.controller";
 
-const studentRouter: ExpressRouter = Router();
+const studentRouter = Router();
 
 // PUT update student profile
 studentRouter.put(

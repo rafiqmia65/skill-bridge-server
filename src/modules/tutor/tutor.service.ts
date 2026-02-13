@@ -213,19 +213,20 @@ export const getTutorDashboard = async (userId: string) => {
   const availabilityCount = tutorProfile.availability.length;
   const totalSessions = bookings.length + availabilityCount; // include availability
   const upcomingSessions =
-    bookings.filter((b) => b.status === "CONFIRMED").length + availabilityCount; // treat all slots as upcoming
+    bookings.filter((b: any) => b.status === "CONFIRMED").length +
+    availabilityCount; // treat all slots as upcoming
   const completedSessions = bookings.filter(
-    (b) => b.status === "COMPLETED",
+    (b: any) => b.status === "COMPLETED",
   ).length;
   const cancelledSessions = bookings.filter(
-    (b) => b.status === "CANCELLED",
+    (b: any) => b.status === "CANCELLED",
   ).length;
   const totalEarnings = completedSessions * tutorProfile.pricePerHr;
 
   // Recent reviews
   const reviews = bookings
-    .filter((b) => b.review)
-    .map((b) => ({
+    .filter((b: any) => b.review)
+    .map((b: any) => ({
       id: b.review!.id,
       rating: b.review!.rating,
       comment: b.review!.comment,
@@ -242,8 +243,8 @@ export const getTutorDashboard = async (userId: string) => {
       bio: tutorProfile.bio,
       pricePerHr: tutorProfile.pricePerHr,
       rating: tutorProfile.rating,
-      categories: tutorProfile.categories.map((c) => c.name),
-      availability: tutorProfile.availability.map((a) => ({
+      categories: tutorProfile.categories.map((c: any) => c.name),
+      availability: tutorProfile.availability.map((a: any) => ({
         day: a.day,
         startTime: a.startTime,
         endTime: a.endTime,
@@ -257,8 +258,8 @@ export const getTutorDashboard = async (userId: string) => {
       totalEarnings,
       rating: tutorProfile.rating,
     },
-    upcomingSessions: bookings.filter((b) => b.status === "CONFIRMED"),
-    recentSessions: bookings.slice(0, 5).map((b) => ({
+    upcomingSessions: bookings.filter((b: any) => b.status === "CONFIRMED"),
+    recentSessions: bookings.slice(0, 5).map((b: any) => ({
       id: b.id,
       studentName: b.student.name,
       date: b.date,

@@ -3,7 +3,7 @@ import { Role } from "../../constants/role";
 import { authorize } from "../../middlewares/authorize";
 import { createReviewController } from "./review.controller";
 
-const reviewRouter: ExpressRouter = Router();
+const reviewRouter = Router();
 
 /**
  * @route   POST /api/reviews
