@@ -28,7 +28,7 @@ export const createReviewController = async (
   } catch (error: any) {
     res.status(400).json({
       success: false,
-      message: error.message,
+      message: error.message || "Failed to submit review",
     });
   }
 };

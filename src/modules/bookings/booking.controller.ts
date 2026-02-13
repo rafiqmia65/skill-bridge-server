@@ -3,6 +3,7 @@ import * as BookingService from "./booking.service.js";
 
 /**
  * @desc Create a new booking
+ * @route POST /api/bookings
  */
 export const createBookingController = async (
   req: RequestWithUser<{ tutorProfileId: string; date: string }>,
@@ -36,6 +37,7 @@ export const createBookingController = async (
 
 /**
  * @desc Get all bookings of logged-in student
+ * @route GET /api/bookings/my
  */
 export const getMyBookingsController = async (
   req: RequestWithUser,
@@ -57,6 +59,7 @@ export const getMyBookingsController = async (
 
 /**
  * @desc Get single booking by ID
+ * @route GET /api/bookings/:id
  */
 export const getBookingByIdController = async (
   req: RequestWithUser<any, { id: string }>,
@@ -64,9 +67,7 @@ export const getBookingByIdController = async (
 ) => {
   try {
     const studentId = req.user!.id;
-    const bookingId = Array.isArray(req.params.id)
-      ? req.params.id[0]
-      : req.params.id;
+    const bookingId = req.params.id;
 
     if (!bookingId) {
       return res
@@ -88,6 +89,7 @@ export const getBookingByIdController = async (
 
 /**
  * @desc Admin: Get all bookings
+ * @route GET /api/bookings
  */
 export const getAllBookingsController = async (
   req: RequestWithUser,

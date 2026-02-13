@@ -1,13 +1,17 @@
-import type { RequestWithBody, AppResponse } from "../../types/express.js";
+import type { AppResponse, RequestWithHeaders } from "../../types/express.js";
 
 const BASE_URL = `${process.env.BACKEND_URL}/api/auth`;
 
+/**
+ * Proxy request to Better Auth backend
+ */
 export async function authProxyService(
-  req: RequestWithBody,
+  req: RequestWithHeaders<any>, // use headers + typed body
   res: AppResponse,
   path: string,
-): Promise<AppResponse> {
+): Promise<void> {
   try {
+    // Normalize headers for fetch
     const origin = Array.isArray(req.headers.origin)
       ? req.headers.origin[0]
       : req.headers.origin;
@@ -18,7 +22,7 @@ export async function authProxyService(
       ? req.headers.authorization[0]
       : req.headers.authorization;
 
-    // --- Fix for exactOptionalPropertyTypes ---
+    // Prepare request body
     let body: BodyInit | null = null;
     if (!["GET", "HEAD"].includes(req.method) && req.body) {
       body = JSON.stringify(req.body);
@@ -35,13 +39,16 @@ export async function authProxyService(
       body,
     };
 
+    // Call the backend
     const fetchResponse = await fetch(`${BASE_URL}${path}`, init);
 
+    // Forward any Set-Cookie header
     const setCookie = fetchResponse.headers.get("set-cookie");
     if (setCookie) {
       res.setHeader("Set-Cookie", setCookie);
     }
 
+    // Parse response body
     const text = await fetchResponse.text();
     let data: Record<string, unknown> = {};
     try {
@@ -50,14 +57,15 @@ export async function authProxyService(
       data = { message: text };
     }
 
-    return res.status(fetchResponse.status).json(data);
+    // Respond to client
+    res.status(fetchResponse.status).json(data);
   } catch (error: unknown) {
     console.error("AUTH PROXY SERVICE ERROR:", error);
 
     const errorMessage =
       error instanceof Error ? error.message : "Internal server error";
 
-    return res.status(500).json({
+    res.status(500).json({
       code: "PROXY_ERROR",
       message: errorMessage,
     });

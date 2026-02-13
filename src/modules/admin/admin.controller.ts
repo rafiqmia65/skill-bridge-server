@@ -1,9 +1,6 @@
 import { AppResponse, RequestWithBodyAndParams } from "../../types/express.js";
 import * as AdminService from "./admin.service.js";
 
-/**
- * Get all users
- */
 export const getAllUsersController = async (
   req: RequestWithBodyAndParams<{}, {}>,
   res: AppResponse,
@@ -16,9 +13,6 @@ export const getAllUsersController = async (
   });
 };
 
-/**
- * Update user status
- */
 export const updateUserStatusController = async (
   req: RequestWithBodyAndParams<
     { status: "ACTIVE" | "BANNED" },

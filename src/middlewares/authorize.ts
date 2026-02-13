@@ -5,19 +5,26 @@ import { AppResponse, RequestWithUser } from "../types/express.js";
 type Role = "ADMIN" | "TUTOR" | "STUDENT";
 
 /**
+ * AuthRequest: Request that has both `user` and `headers`
+ */
+export interface AuthRequest<TBody = any> extends RequestWithUser<TBody> {
+  headers: Record<string, string | string[] | undefined>;
+}
+
+/**
  * Universal authorize middleware
  */
 export const authorize =
   (...allowedRoles: Role[]) =>
   async (
-    req: RequestWithUser,
+    req: AuthRequest, // <-- Use the unified type
     res: AppResponse,
     next: NextFunction,
   ): Promise<void> => {
     try {
       // Get session from headers (Postman) or cookies (browser)
       const session = await auth.api.getSession({
-        headers: req.headers as any, // pass cookies or auth headers
+        headers: req.headers as Record<string, string>, // convert to string-only for SDK
       });
 
       if (!session || !session.user) {
@@ -25,8 +32,8 @@ export const authorize =
         return;
       }
 
-      // attach user to request
-      req.user = session.user as any; // typecast to our user type
+      // Attach user to request
+      req.user = session.user as any;
 
       // Check allowed roles
       if (!req.user || !allowedRoles.includes(req.user.role as Role)) {
@@ -41,6 +48,5 @@ export const authorize =
     } catch (error: any) {
       console.error("Authorize middleware error:", error);
       res.status(401).json({ message: "Unauthorized" });
-      return;
     }
   };

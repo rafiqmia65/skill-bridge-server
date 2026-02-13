@@ -1,4 +1,4 @@
-import { AppResponse, RequestWithHeaders } from "../../types/express.js";
+import { RequestWithHeaders, AppResponse } from "../../types/express.js";
 import { authProxyService } from "./auth.proxy.service.js";
 import { auth } from "../../lib/auth.js";
 
@@ -24,7 +24,6 @@ function normalizeHeaders(
  * @access  Public
  */
 export const register = (req: RequestWithHeaders, res: AppResponse) => {
-  // Cast to `any` for authProxyService if it expects a RequestWithBody
   return authProxyService(req as any, res, "/sign-up/email");
 };
 
@@ -45,7 +44,7 @@ export const login = (req: RequestWithHeaders, res: AppResponse) => {
 export const me = async (req: RequestWithHeaders, res: AppResponse) => {
   try {
     const session = await auth.api.getSession({
-      headers: normalizeHeaders(req.headers), // pass string-only headers
+      headers: normalizeHeaders(req.headers),
     });
 
     if (!session) {

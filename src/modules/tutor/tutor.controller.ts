@@ -7,19 +7,26 @@ import * as TutorService from "./tutor.service.js";
  * @access  Private (Tutor)
  */
 export const upsertTutorProfile = async (
-  req: RequestWithUser,
+  req: RequestWithUser<any>, // body = any
   res: AppResponse,
 ) => {
-  const userId = req.user!.id;
-  const payload = req.body;
+  try {
+    const userId = req.user!.id;
+    const payload = req.body;
 
-  const profile = await TutorService.upsertTutorProfile(userId, payload);
+    const profile = await TutorService.upsertTutorProfile(userId, payload);
 
-  res.status(200).json({
-    success: true,
-    message: "Tutor profile saved successfully",
-    data: profile,
-  });
+    res.status(200).json({
+      success: true,
+      message: "Tutor profile saved successfully",
+      data: profile,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to save tutor profile",
+    });
+  }
 };
 
 /**
@@ -31,16 +38,23 @@ export const updateAvailabilityController = async (
   req: RequestWithUser<{ slots: any[] }>,
   res: AppResponse,
 ) => {
-  const userId = req.user!.id;
-  const { slots } = req.body;
+  try {
+    const userId = req.user!.id;
+    const { slots } = req.body;
 
-  const availability = await TutorService.updateAvailability(userId, slots);
+    const availability = await TutorService.updateAvailability(userId, slots);
 
-  res.status(200).json({
-    success: true,
-    message: "Availability updated successfully",
-    data: availability,
-  });
+    res.status(200).json({
+      success: true,
+      message: "Availability updated successfully",
+      data: availability,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to update availability",
+    });
+  }
 };
 
 /**
@@ -49,7 +63,7 @@ export const updateAvailabilityController = async (
  * @access  Public
  */
 export const getAllTutorsController = async (
-  req: RequestWithUser<any, any>,
+  req: RequestWithUser<any, any, any>,
   res: AppResponse,
 ) => {
   try {
@@ -62,6 +76,7 @@ export const getAllTutorsController = async (
       page: page ? Number(page) : 1,
       limit: limit ? Number(limit) : 12,
     };
+
     if (minPrice !== undefined) filters.minPrice = Number(minPrice);
     if (maxPrice !== undefined) filters.maxPrice = Number(maxPrice);
     if (rating !== undefined) filters.rating = Number(rating);
@@ -73,7 +88,7 @@ export const getAllTutorsController = async (
       message: "Tutors retrieved successfully",
       ...result,
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       message: "Something went wrong",
@@ -125,7 +140,7 @@ export const getTutorDashboardController = async (
   res: AppResponse,
 ) => {
   try {
-    const userId = req.user!.id; // from auth middleware
+    const userId = req.user!.id;
     const dashboardData = await TutorService.getTutorDashboard(userId);
 
     res.status(200).json({

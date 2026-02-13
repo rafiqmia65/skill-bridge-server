@@ -7,7 +7,7 @@ import * as CategoryService from "./category.service.js";
  * @access  Private (Admin)
  */
 export const addCategory = async (
-  req: RequestWithBody<{ name: string }>,
+  req: RequestWithBody<{ name: string }>, // POST request with body
   res: AppResponse,
 ) => {
   try {
@@ -38,7 +38,7 @@ export const addCategory = async (
  * @access  Public
  */
 export const listCategories = async (
-  req: RequestWithBody<{}>,
+  req: RequestWithBody<never>, // GET request has no body
   res: AppResponse,
 ) => {
   try {
