@@ -13,7 +13,7 @@ import reviewRouter from "./modules/reviews/review.router";
 import adminRouter from "./modules/admin/admin.router";
 import studentRouter from "./modules/student/student.router";
 
-const app: Application = express();
+const app: any = express();
 
 /**
  * Middleware to parse incoming requests with JSON payloads

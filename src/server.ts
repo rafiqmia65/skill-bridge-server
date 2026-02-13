@@ -12,7 +12,7 @@ async function main() {
     console.log("✅ Database connected");
 
     // Production- listen
-    app.listen(port, () => {
+    (app as any).listen(port, () => {
       console.log(`🚀 Server running on port ${port}`);
     });
   } catch (error: any) {
