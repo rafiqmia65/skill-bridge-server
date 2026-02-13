@@ -1,4 +1,4 @@
-import { type Request, type Response } from "express";
+import { Request, Response } from "express";
 import { StudentProfileService } from "./student.service";
 
 /**

@@ -1,4 +1,4 @@
-import express, { type Application } from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth";
@@ -13,7 +13,7 @@ import reviewRouter from "./modules/reviews/review.router";
 import adminRouter from "./modules/admin/admin.router";
 import studentRouter from "./modules/student/student.router";
 
-const app: Application = express();
+const app = express();
 
 /**
  * Middleware to parse incoming requests with JSON payloads
@@ -84,7 +84,7 @@ app.use("/api/student", studentRouter);
  * Health check route
  * Confirms the server is running and reachable
  */
-app.get("/", (req, res) => {
+app.get("/", (req: Request, res: Response) => {
   res.json({
     status: "OK",
     message: "Skill Bridge App is running successfully",

@@ -1,8 +1,8 @@
-import { Router, type Router as ExpressRouter } from "express";
+import express, { Router } from "express";
 import * as CategoryController from "./category.controller";
 import { authorize } from "../../middlewares/authorize";
 
-const categoryRouter = Router();
+const categoryRouter: express.Router = Router();
 
 /**
  * @route   POST /api/categories

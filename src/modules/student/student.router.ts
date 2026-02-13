@@ -1,4 +1,4 @@
-import { Router, type Router as ExpressRouter } from "express";
+import express, { Router } from "express";
 import { authorize } from "../../middlewares/authorize";
 import { Role } from "../../constants/role";
 import {
@@ -6,7 +6,7 @@ import {
   updateStudentProfileController,
 } from "./student.controller";
 
-const studentRouter = Router();
+const studentRouter: express.Router = Router();
 
 // PUT update student profile
 studentRouter.put(

@@ -1,4 +1,4 @@
-import { Router, type Router as ExpressRouter } from "express";
+import express, { Router } from "express";
 import { authorize } from "../../middlewares/authorize";
 import { Role } from "../../constants/role";
 import {
@@ -8,7 +8,7 @@ import {
   getMyBookingsController,
 } from "./booking.controller";
 
-const bookingRouter = Router();
+const bookingRouter: express.Router = Router();
 
 /**
  * @route   POST /api/bookings

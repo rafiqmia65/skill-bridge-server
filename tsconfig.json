@@ -13,10 +13,8 @@
     "target": "ES2023",
     // "types": [],
     // For nodejs:
-    "lib": ["esnext"],
-    "types": ["node"],
-    // and npm install -D @types/node
-    "typeRoots": ["./node_modules/@types", "./types"],
+    "lib": ["esnext", "dom"],
+    "typeRoots": ["./node_modules/@types"],
     // Other Outputs
     "sourceMap": true,
     "declaration": true,
@@ -45,6 +43,6 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*", "prisma/**/*", "generated/**/*", "./types/**/*"],
-  "exclude": ["node_modules", "dist", "generated"]
+  "include": ["src/**/*", "prisma/**/*", "generated/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

@@ -1,9 +1,9 @@
-import { Router, type Router as ExpressRouter } from "express";
+import express, { Router } from "express";
 import { Role } from "../../constants/role";
 import { authorize } from "../../middlewares/authorize";
 import { createReviewController } from "./review.controller";
 
-const reviewRouter = Router();
+const reviewRouter: express.Router = Router();
 
 /**
  * @route   POST /api/reviews

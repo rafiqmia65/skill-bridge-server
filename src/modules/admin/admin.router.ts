@@ -1,4 +1,4 @@
-import { Router, type Router as ExpressRouter } from "express";
+import express, { Router } from "express";
 import { Role } from "../../constants/role";
 import { authorize } from "../../middlewares/authorize";
 import {
@@ -6,7 +6,7 @@ import {
   updateUserStatusController,
 } from "./admin.controller";
 
-const adminRouter: ExpressRouter = Router();
+const adminRouter: express.Router = Router();
 
 /**
  * @route   GET /api/admin/users

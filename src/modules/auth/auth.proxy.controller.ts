@@ -1,4 +1,4 @@
-import { type Request, type Response } from "express";
+import { Request, Response } from "express";
 import { authProxyService } from "./auth.proxy.service";
 import { auth } from "../../lib/auth";
 
