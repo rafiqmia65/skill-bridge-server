@@ -1,9 +1,9 @@
 import "dotenv/config";
 import app from "./app";
 import { prisma } from "./lib/prisma";
-
-const port = parseInt(process.env.PORT || "5000", 10); // parseInt
-const HOST = "0.0.0.0"; // Render MUST
+const port = process.env.PORT || 5000;
+// const port = parseInt(process.env.PORT || "5000", 10); // parseInt
+// const HOST = "0.0.0.0"; // Render MUST
 
 async function main() {
   try {
@@ -11,8 +11,8 @@ async function main() {
     console.log("✅ Database connected");
 
     // Production- listen
-    app.listen(port, HOST, () => {
-      console.log(`🚀 Server running on http://${HOST}:${port}`);
+    app.listen(port, () => {
+      console.log(`🚀 Server running on port ${port}`);
     });
   } catch (error: any) {
     console.error("❌ Error starting server:", error);
