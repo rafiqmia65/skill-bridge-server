@@ -1,15 +1,11 @@
-import { Request, Response } from "express";
-import {
-  AppResponse,
-  RequestWithBodyAndParams,
-} from "../../../types/express.js";
+import { AppResponse, RequestWithBodyAndParams } from "../../types/express.js";
 import * as AdminService from "./admin.service.js";
 
 /**
- * @desc Get all users
+ * Get all users
  */
 export const getAllUsersController = async (
-  req: Request<{}, {}, {}, {}>, // no params, no body, no query
+  req: RequestWithBodyAndParams<{}, {}>,
   res: AppResponse,
 ) => {
   const users = await AdminService.getAllUsers();
@@ -21,7 +17,7 @@ export const getAllUsersController = async (
 };
 
 /**
- * @desc Update user status (ban/unban)
+ * Update user status
  */
 export const updateUserStatusController = async (
   req: RequestWithBodyAndParams<

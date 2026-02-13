@@ -1,6 +1,5 @@
-import type { Response } from "express";
+import { AppResponse, RequestWithUser } from "../../types/express.js";
 import * as TutorService from "./tutor.service.js";
-import { RequestWithUser } from "../../../types/express.js";
 
 /**
  * @desc    Create or update tutor profile
@@ -9,7 +8,7 @@ import { RequestWithUser } from "../../../types/express.js";
  */
 export const upsertTutorProfile = async (
   req: RequestWithUser,
-  res: Response,
+  res: AppResponse,
 ) => {
   const userId = req.user!.id;
   const payload = req.body;
@@ -30,7 +29,7 @@ export const upsertTutorProfile = async (
  */
 export const updateAvailabilityController = async (
   req: RequestWithUser<{ slots: any[] }>,
-  res: Response,
+  res: AppResponse,
 ) => {
   const userId = req.user!.id;
   const { slots } = req.body;
@@ -51,7 +50,7 @@ export const updateAvailabilityController = async (
  */
 export const getAllTutorsController = async (
   req: RequestWithUser<any, any>,
-  res: Response,
+  res: AppResponse,
 ) => {
   try {
     const { search, category, minPrice, maxPrice, rating, page, limit } =
@@ -75,9 +74,11 @@ export const getAllTutorsController = async (
       ...result,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ success: false, message: "Something went wrong", error });
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+      error,
+    });
   }
 };
 
@@ -88,14 +89,15 @@ export const getAllTutorsController = async (
  */
 export const getTutorByIdController = async (
   req: RequestWithUser<any, any, { id: string }>,
-  res: Response,
+  res: AppResponse,
 ) => {
   try {
     const tutorId = req.params.id;
     if (!tutorId || Array.isArray(tutorId)) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid tutor ID" });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid tutor ID",
+      });
     }
 
     const tutor = await TutorService.getTutorById(tutorId);
@@ -106,9 +108,10 @@ export const getTutorByIdController = async (
       data: tutor,
     });
   } catch (error: any) {
-    res
-      .status(404)
-      .json({ success: false, message: error.message || "Tutor not found" });
+    res.status(404).json({
+      success: false,
+      message: error.message || "Tutor not found",
+    });
   }
 };
 
@@ -119,11 +122,10 @@ export const getTutorByIdController = async (
  */
 export const getTutorDashboardController = async (
   req: RequestWithUser,
-  res: Response,
+  res: AppResponse,
 ) => {
   try {
     const userId = req.user!.id; // from auth middleware
-
     const dashboardData = await TutorService.getTutorDashboard(userId);
 
     res.status(200).json({

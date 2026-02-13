@@ -1,8 +1,11 @@
-import type { Response } from "express";
+import { AppResponse, RequestWithHeaders } from "../../types/express.js";
 import { authProxyService } from "./auth.proxy.service.js";
 import { auth } from "../../lib/auth.js";
-import { RequestWithHeaders } from "../../../types/express.js";
 
+/**
+ * Convert Express headers (string | string[] | undefined) into
+ * string-to-string mapping suitable for fetch or auth SDK calls.
+ */
 function normalizeHeaders(
   headers: Record<string, string | string[] | undefined>,
 ): Record<string, string> {
@@ -18,27 +21,31 @@ function normalizeHeaders(
 /**
  * @desc    Proxy register request to Better Auth
  * @route   POST /api/auth/register
+ * @access  Public
  */
-export const register = (req: RequestWithHeaders, res: Response) => {
-  return authProxyService(req, res, "/sign-up/email");
+export const register = (req: RequestWithHeaders, res: AppResponse) => {
+  // Cast to `any` for authProxyService if it expects a RequestWithBody
+  return authProxyService(req as any, res, "/sign-up/email");
 };
 
 /**
  * @desc    Proxy login request to Better Auth
  * @route   POST /api/auth/login
+ * @access  Public
  */
-export const login = (req: RequestWithHeaders, res: Response) => {
-  return authProxyService(req, res, "/sign-in/email");
+export const login = (req: RequestWithHeaders, res: AppResponse) => {
+  return authProxyService(req as any, res, "/sign-in/email");
 };
 
 /**
  * @desc    Retrieve current session information
  * @route   GET /api/auth/me
+ * @access  Public
  */
-export const me = async (req: RequestWithHeaders, res: Response) => {
+export const me = async (req: RequestWithHeaders, res: AppResponse) => {
   try {
     const session = await auth.api.getSession({
-      headers: normalizeHeaders(req.headers), // <-- now type-safe
+      headers: normalizeHeaders(req.headers), // pass string-only headers
     });
 
     if (!session) {

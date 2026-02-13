@@ -1,12 +1,6 @@
-import { Request, Response } from "express";
+import { RequestWithUser, AppResponse } from "../../types/express.js";
 import * as ReviewService from "./review.service.js";
-import { RequestWithUser } from "../../../types/express.js";
 
-/**
- * @desc    Controller to create a review
- * @route   POST /api/reviews
- * @access  Private (Student)
- */
 /**
  * @desc    Controller to create a review
  * @route   POST /api/reviews
@@ -14,7 +8,7 @@ import { RequestWithUser } from "../../../types/express.js";
  */
 export const createReviewController = async (
   req: RequestWithUser<{ bookingId: string; rating: number; comment: string }>,
-  res: Response,
+  res: AppResponse,
 ) => {
   try {
     const studentId = req.user!.id; // authenticated student

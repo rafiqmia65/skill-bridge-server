@@ -1,4 +1,4 @@
-import type { RequestWithBody, AppResponse } from "../../../types/express.d.js";
+import type { RequestWithBody, AppResponse } from "../../types/express.js";
 
 const BASE_URL = `${process.env.BACKEND_URL}/api/auth`;
 

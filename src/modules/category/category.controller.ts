@@ -1,6 +1,5 @@
-import type { Response } from "express";
+import { RequestWithBody, AppResponse } from "../../types/express.js";
 import * as CategoryService from "./category.service.js";
-import { RequestWithBody } from "../../../types/express.js";
 
 /**
  * @desc    Add a new category (Admin only)
@@ -9,7 +8,7 @@ import { RequestWithBody } from "../../../types/express.js";
  */
 export const addCategory = async (
   req: RequestWithBody<{ name: string }>,
-  res: Response,
+  res: AppResponse,
 ) => {
   try {
     const { name } = req.body;
@@ -40,16 +39,20 @@ export const addCategory = async (
  */
 export const listCategories = async (
   req: RequestWithBody<{}>,
-  res: Response,
+  res: AppResponse,
 ) => {
   try {
     const categories = await CategoryService.getAllCategories();
+
     res.status(200).json({
       success: true,
       message: "Categories retrieved successfully",
       data: categories,
     });
   } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };

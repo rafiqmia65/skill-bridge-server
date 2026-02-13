@@ -1,4 +1,4 @@
-import { AppResponse, RequestWithUser } from "../../../types/express.js";
+import { AppResponse, RequestWithUser } from "../../types/express.js";
 import { StudentProfileService } from "./student.service.js";
 
 /**
@@ -9,7 +9,7 @@ export const getStudentProfileController = async (
   res: AppResponse,
 ) => {
   try {
-    const userId = req.user!.id; // from auth middleware
+    const userId = req.user!.id;
     const profile = await StudentProfileService.getProfile(userId);
 
     res.status(200).json({

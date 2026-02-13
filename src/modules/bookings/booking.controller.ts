@@ -1,4 +1,4 @@
-import { AppResponse, RequestWithUser } from "../../../types/express.js";
+import { AppResponse, RequestWithUser } from "../../types/express.js";
 import * as BookingService from "./booking.service.js";
 
 /**

@@ -1,6 +1,6 @@
 import { NextFunction } from "express";
 import { auth } from "../lib/auth.js";
-import { AppResponse, RequestWithUser } from "../../types/express.js";
+import { AppResponse, RequestWithUser } from "../types/express.js";
 
 type Role = "ADMIN" | "TUTOR" | "STUDENT";
 
