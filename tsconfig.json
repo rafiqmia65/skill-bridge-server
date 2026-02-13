@@ -13,7 +13,7 @@
     "target": "ES2023",
     "types": ["node"],
     // For nodejs:
-    "lib": ["esnext"],
+    "lib": ["esnext", "dom"],
     // Other Outputs
     "sourceMap": true,
     "declaration": true,

@@ -1,12 +1,16 @@
-import { Request, Response } from "express";
+import type { Response } from "express";
 import * as TutorService from "./tutor.service.js";
+import { RequestWithUser } from "../../../types/express.js";
 
 /**
  * @desc    Create or update tutor profile
  * @route   PUT /api/tutor/profile
  * @access  Private (Tutor)
  */
-export const upsertTutorProfile = async (req: Request, res: Response) => {
+export const upsertTutorProfile = async (
+  req: RequestWithUser,
+  res: Response,
+) => {
   const userId = req.user!.id;
   const payload = req.body;
 
@@ -25,7 +29,7 @@ export const upsertTutorProfile = async (req: Request, res: Response) => {
  * @access  Private (Tutor)
  */
 export const updateAvailabilityController = async (
-  req: Request,
+  req: RequestWithUser<{ slots: any[] }>,
   res: Response,
 ) => {
   const userId = req.user!.id;
@@ -45,8 +49,10 @@ export const updateAvailabilityController = async (
  * @route   GET /api/tutors
  * @access  Public
  */
-
-export const getAllTutorsController = async (req: Request, res: Response) => {
+export const getAllTutorsController = async (
+  req: RequestWithUser<any, any>,
+  res: Response,
+) => {
   try {
     const { search, category, minPrice, maxPrice, rating, page, limit } =
       req.query;
@@ -80,7 +86,10 @@ export const getAllTutorsController = async (req: Request, res: Response) => {
  * @route   GET /api/tutors/:id
  * @access  Public
  */
-export const getTutorByIdController = async (req: Request, res: Response) => {
+export const getTutorByIdController = async (
+  req: RequestWithUser<any, any, { id: string }>,
+  res: Response,
+) => {
   try {
     const tutorId = req.params.id;
     if (!tutorId || Array.isArray(tutorId)) {
@@ -109,11 +118,11 @@ export const getTutorByIdController = async (req: Request, res: Response) => {
  * @access  Private (Tutor)
  */
 export const getTutorDashboardController = async (
-  req: Request,
+  req: RequestWithUser,
   res: Response,
 ) => {
   try {
-    const userId = req.user!.id; // from token
+    const userId = req.user!.id; // from auth middleware
 
     const dashboardData = await TutorService.getTutorDashboard(userId);
 

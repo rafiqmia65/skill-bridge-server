@@ -1,10 +1,13 @@
-import { Request, Response } from "express";
+import { AppResponse, RequestWithUser } from "../../../types/express.js";
 import * as BookingService from "./booking.service.js";
 
 /**
  * @desc Create a new booking
  */
-export const createBookingController = async (req: Request, res: Response) => {
+export const createBookingController = async (
+  req: RequestWithUser<{ tutorProfileId: string; date: string }>,
+  res: AppResponse,
+) => {
   try {
     const studentId = req.user!.id;
     const { tutorProfileId, date } = req.body;
@@ -34,7 +37,10 @@ export const createBookingController = async (req: Request, res: Response) => {
 /**
  * @desc Get all bookings of logged-in student
  */
-export const getMyBookingsController = async (req: Request, res: Response) => {
+export const getMyBookingsController = async (
+  req: RequestWithUser,
+  res: AppResponse,
+) => {
   try {
     const studentId = req.user!.id;
     const bookings = await BookingService.getMyBookings(studentId);
@@ -52,7 +58,10 @@ export const getMyBookingsController = async (req: Request, res: Response) => {
 /**
  * @desc Get single booking by ID
  */
-export const getBookingByIdController = async (req: Request, res: Response) => {
+export const getBookingByIdController = async (
+  req: RequestWithUser<any, { id: string }>,
+  res: AppResponse,
+) => {
   try {
     const studentId = req.user!.id;
     const bookingId = Array.isArray(req.params.id)
@@ -80,7 +89,10 @@ export const getBookingByIdController = async (req: Request, res: Response) => {
 /**
  * @desc Admin: Get all bookings
  */
-export const getAllBookingsController = async (req: Request, res: Response) => {
+export const getAllBookingsController = async (
+  req: RequestWithUser,
+  res: AppResponse,
+) => {
   try {
     const bookings = await BookingService.getAllBookings();
     res.status(200).json({

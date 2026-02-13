@@ -1,12 +1,16 @@
-import { Request, Response } from "express";
+import type { Response } from "express";
 import * as CategoryService from "./category.service.js";
+import { RequestWithBody } from "../../../types/express.js";
 
 /**
  * @desc    Add a new category (Admin only)
  * @route   POST /api/categories
  * @access  Private (Admin)
  */
-export const addCategory = async (req: Request, res: Response) => {
+export const addCategory = async (
+  req: RequestWithBody<{ name: string }>,
+  res: Response,
+) => {
   try {
     const { name } = req.body;
 
@@ -23,7 +27,6 @@ export const addCategory = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     if (error.code === "P2002") {
-      // Prisma unique constraint failed
       return res.status(400).json({ message: "Category already exists" });
     }
     res.status(500).json({ message: error.message });
@@ -35,7 +38,10 @@ export const addCategory = async (req: Request, res: Response) => {
  * @route   GET /api/categories
  * @access  Public
  */
-export const listCategories = async (req: Request, res: Response) => {
+export const listCategories = async (
+  req: RequestWithBody<{}>,
+  res: Response,
+) => {
   try {
     const categories = await CategoryService.getAllCategories();
     res.status(200).json({

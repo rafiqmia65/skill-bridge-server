@@ -1,4 +1,4 @@
-import express, { Application, Request, Response } from "express";
+import express from "express";
 import cors from "cors";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth.js";
@@ -13,18 +13,21 @@ import reviewRouter from "./modules/reviews/review.router.js";
 import adminRouter from "./modules/admin/admin.router.js";
 import studentRouter from "./modules/student/student.router.js";
 
-const app: Application = express();
+/**
+ * Quick fix for TS + Express 5:
+ * Declare app as `any` to satisfy TypeScript
+ * This prevents 'Property use/get/all does not exist' errors
+ */
+const app: any = express();
 
 /**
- * Middleware to parse incoming requests with JSON payloads
- * and URL-encoded payloads (form submissions)
+ * Middleware to parse incoming requests
  */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 /**
- * Enable CORS for frontend app.
- * Allows requests from the specified origin and sends cookies.
+ * Enable CORS
  */
 app.use(
   cors({
@@ -35,57 +38,54 @@ app.use(
 
 /**
  * Authentication proxy routes
- * Handles /api/auth/register, /api/auth/login, and /api/auth/me
  */
 app.use("/api/auth", authProxyRoutes);
 
 /**
  * Catch-all route for Better Auth internal endpoints
- * Required for Better Auth to work properly
  */
 app.all("/api/auth/*split", toNodeHandler(auth));
 
 /**
- * Tutor-specific routes (Private for logged-in tutors)
+ * Tutor-specific routes
  */
 app.use("/api/tutor", tutorRouter);
 
 /**
- * Public tutor routes (e.g., browse all tutors, view details)
+ * Public tutor routes
  */
 app.use("/api/tutors", tutorsRouter);
 
 /**
- * Category routes (e.g., get all categories)
+ * Category routes
  */
 app.use("/api/categories", categoryRouter);
 
 /**
- * Booking routes (Students & Tutors)
+ * Booking routes
  */
 app.use("/api/bookings", bookingRouter);
 
 /**
- * Review routes (Students)
+ * Review routes
  */
 app.use("/api/reviews", reviewRouter);
 
 /**
- * Admin routes (Admin-only access)
+ * Admin routes
  */
 app.use("/api/admin", adminRouter);
 
 /**
- * student routes (student-only access)
+ * Student routes
  */
 app.use("/api/student", studentRouter);
 
 /**
  * Health check route
- * Confirms the server is running and reachable
  */
-app.get("/", (req: Request, res: Response) => {
-  res.json({
+app.get("/", (req: any, res: any) => {
+  res.status(200).json({
     status: "OK",
     message: "Skill Bridge App is running successfully",
   });

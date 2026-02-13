@@ -1,12 +1,12 @@
-import { Request, Response } from "express";
+import { AppResponse, RequestWithUser } from "../../../types/express.js";
 import { StudentProfileService } from "./student.service.js";
 
 /**
  * GET /api/student/profile
  */
 export const getStudentProfileController = async (
-  req: Request,
-  res: Response,
+  req: RequestWithUser,
+  res: AppResponse,
 ) => {
   try {
     const userId = req.user!.id; // from auth middleware
@@ -29,8 +29,8 @@ export const getStudentProfileController = async (
  * PUT /api/student/profile
  */
 export const updateStudentProfileController = async (
-  req: Request,
-  res: Response,
+  req: RequestWithUser,
+  res: AppResponse,
 ) => {
   try {
     const userId = req.user!.id;

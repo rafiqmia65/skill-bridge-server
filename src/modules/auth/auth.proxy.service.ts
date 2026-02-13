@@ -1,56 +1,49 @@
-import type {
-  Request as ExpressRequest,
-  Response as ExpressResponse,
-} from "express";
+import type { RequestWithBody, AppResponse } from "../../../types/express.d.js";
 
-/**
- * Better Auth backend base URL
- * example: https://your-backend.vercel.app
- */
 const BASE_URL = `${process.env.BACKEND_URL}/api/auth`;
 
-type FetchRequestInit = globalThis.RequestInit;
-type FetchResponse = globalThis.Response;
-
 export async function authProxyService(
-  req: ExpressRequest,
-  res: ExpressResponse,
+  req: RequestWithBody,
+  res: AppResponse,
   path: string,
-): Promise<ExpressResponse> {
+): Promise<AppResponse> {
   try {
-    const init: FetchRequestInit = {
+    const origin = Array.isArray(req.headers.origin)
+      ? req.headers.origin[0]
+      : req.headers.origin;
+    const cookie = Array.isArray(req.headers.cookie)
+      ? req.headers.cookie.join("; ")
+      : req.headers.cookie;
+    const authorization = Array.isArray(req.headers.authorization)
+      ? req.headers.authorization[0]
+      : req.headers.authorization;
+
+    // --- Fix for exactOptionalPropertyTypes ---
+    let body: BodyInit | null = null;
+    if (!["GET", "HEAD"].includes(req.method) && req.body) {
+      body = JSON.stringify(req.body);
+    }
+
+    const init: RequestInit = {
       method: req.method,
       headers: {
         "Content-Type": "application/json",
-        origin: req.headers.origin ?? process.env.APP_URL ?? "",
-        cookie: req.headers.cookie ?? "",
-        // optional: authorization header forward
-        ...(req.headers.authorization && {
-          authorization: req.headers.authorization,
-        }),
+        origin: origin ?? process.env.APP_URL ?? "",
+        cookie: cookie ?? "",
+        ...(authorization && { authorization }),
       },
+      body,
     };
 
-    // attach body for non-GET requests
-    if (!["GET", "HEAD"].includes(req.method)) {
-      init.body = JSON.stringify(req.body);
-    }
+    const fetchResponse = await fetch(`${BASE_URL}${path}`, init);
 
-    const fetchResponse: FetchResponse = await fetch(
-      `${BASE_URL}${path}`,
-      init,
-    );
-
-    // forward session cookie back to browser
     const setCookie = fetchResponse.headers.get("set-cookie");
     if (setCookie) {
       res.setHeader("Set-Cookie", setCookie);
     }
 
-    // safely parse response - NO 'any' type
     const text = await fetchResponse.text();
     let data: Record<string, unknown> = {};
-
     try {
       data = text ? (JSON.parse(text) as Record<string, unknown>) : {};
     } catch {

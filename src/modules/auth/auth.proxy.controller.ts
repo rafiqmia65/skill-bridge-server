@@ -1,12 +1,25 @@
-import { Request, Response } from "express";
+import type { Response } from "express";
 import { authProxyService } from "./auth.proxy.service.js";
 import { auth } from "../../lib/auth.js";
+import { RequestWithHeaders } from "../../../types/express.js";
+
+function normalizeHeaders(
+  headers: Record<string, string | string[] | undefined>,
+): Record<string, string> {
+  const result: Record<string, string> = {};
+  for (const key in headers) {
+    const value = headers[key];
+    if (!value) continue;
+    result[key] = Array.isArray(value) ? value.join("; ") : value;
+  }
+  return result;
+}
 
 /**
  * @desc    Proxy register request to Better Auth
  * @route   POST /api/auth/register
  */
-export const register = (req: Request, res: Response) => {
+export const register = (req: RequestWithHeaders, res: Response) => {
   return authProxyService(req, res, "/sign-up/email");
 };
 
@@ -14,7 +27,7 @@ export const register = (req: Request, res: Response) => {
  * @desc    Proxy login request to Better Auth
  * @route   POST /api/auth/login
  */
-export const login = (req: Request, res: Response) => {
+export const login = (req: RequestWithHeaders, res: Response) => {
   return authProxyService(req, res, "/sign-in/email");
 };
 
@@ -22,10 +35,10 @@ export const login = (req: Request, res: Response) => {
  * @desc    Retrieve current session information
  * @route   GET /api/auth/me
  */
-export const me = async (req: Request, res: Response) => {
+export const me = async (req: RequestWithHeaders, res: Response) => {
   try {
     const session = await auth.api.getSession({
-      headers: req.headers as any, // Forward cookies and headers
+      headers: normalizeHeaders(req.headers), // <-- now type-safe
     });
 
     if (!session) {
