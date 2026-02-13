@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { type Application, type Request, type Response } from "express";
 import cors from "cors";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth";
@@ -13,7 +13,7 @@ import reviewRouter from "./modules/reviews/review.router";
 import adminRouter from "./modules/admin/admin.router";
 import studentRouter from "./modules/student/student.router";
 
-const app = express();
+const app: Application = express();
 
 /**
  * Middleware to parse incoming requests with JSON payloads

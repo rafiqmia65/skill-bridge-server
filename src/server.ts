@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { type Application } from "express";
 import app from "./app";
 import { prisma } from "./lib/prisma";
 const port = process.env.PORT || 5000;
