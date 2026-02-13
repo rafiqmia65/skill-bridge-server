@@ -35,7 +35,7 @@ export async function authProxyService(
       init.body = JSON.stringify(req.body);
     }
 
-    const response = await fetch(`${BASE_URL}${path}`, init);
+    const response: globalThis.Response = await fetch(`${BASE_URL}${path}`, init);
 
     // forward session cookie back to browser
     const setCookie = response.headers.get("set-cookie");
