@@ -1,4 +1,4 @@
-import express, { Router } from "express";
+import { Router } from "express";
 import { authorize } from "../../middlewares/authorize";
 import { Role } from "../../constants/role";
 import {
@@ -8,7 +8,7 @@ import {
   getMyBookingsController,
 } from "./booking.controller";
 
-const bookingRouter: express.Router = Router();
+const bookingRouter = Router();
 
 /**
  * @route   POST /api/bookings

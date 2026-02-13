@@ -1,7 +1,7 @@
-import express, { Router } from "express";
+import { Router } from "express";
 import { register, login, me } from "./auth.proxy.controller";
 
-const authProxyRouter: express.Router = Router();
+const authProxyRouter = Router();
 
 /**
  * @route   POST /api/auth/register

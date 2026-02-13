@@ -1,10 +1,10 @@
-import express, { Router } from "express";
+import { Router } from "express";
 import {
   getAllTutorsController,
   getTutorByIdController,
 } from "./tutor.controller";
 
-const tutorsRouter: express.Router = Router();
+const tutorsRouter = Router();
 
 /**
  * @route   GET /api/tutors
