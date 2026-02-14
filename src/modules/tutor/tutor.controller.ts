@@ -2,12 +2,11 @@ import { Request, Response, NextFunction } from "express";
 import * as TutorService from "./tutor.service.js";
 
 /**
- * @desc    Create or update tutor profile
- * @route   PUT /api/tutor/profile
- * @access  Private (Tutor)
+ * Create or update tutor profile
+ * PUT /api/tutor/profile
  */
 export const upsertTutorProfile = async (
-  req: Request,
+  req: Request<{}, any, any>,
   res: Response,
   next: NextFunction,
 ) => {
@@ -16,31 +15,27 @@ export const upsertTutorProfile = async (
     const payload = req.body;
 
     if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized",
-      });
+      return res.status(401).json({ success: false, message: "Unauthorized" });
     }
 
     const profile = await TutorService.upsertTutorProfile(userId, payload);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Tutor profile saved successfully",
       data: profile,
     });
-  } catch (error: any) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 };
 
 /**
- * @desc    Update tutor availability slots
- * @route   PUT /api/tutor/availability
- * @access  Private (Tutor)
+ * Update tutor availability slots
+ * PUT /api/tutor/availability
  */
 export const updateAvailabilityController = async (
-  req: Request,
+  req: Request<{}, any, { slots: any[] }>,
   res: Response,
   next: NextFunction,
 ) => {
@@ -49,31 +44,27 @@ export const updateAvailabilityController = async (
     const { slots } = req.body;
 
     if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized",
-      });
+      return res.status(401).json({ success: false, message: "Unauthorized" });
     }
 
     const availability = await TutorService.updateAvailability(userId, slots);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Availability updated successfully",
       data: availability,
     });
-  } catch (error: any) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 };
 
 /**
- * @desc    Get all tutors with optional filters
- * @route   GET /api/tutors
- * @access  Public
+ * Get all tutors with optional filters
+ * GET /api/tutors
  */
 export const getAllTutorsController = async (
-  req: Request,
+  req: Request<{}, any, any, Record<string, any>>,
   res: Response,
   next: NextFunction,
 ) => {
@@ -82,65 +73,62 @@ export const getAllTutorsController = async (
       req.query;
 
     const filters: any = {
-      search: search as string,
-      category: category as string,
+      search: search ? String(search) : undefined,
+      category: category ? String(category) : undefined,
+      minPrice: minPrice ? Number(minPrice) : undefined,
+      maxPrice: maxPrice ? Number(maxPrice) : undefined,
+      rating: rating ? Number(rating) : undefined,
       page: page ? Number(page) : 1,
       limit: limit ? Number(limit) : 12,
     };
 
-    if (minPrice !== undefined) filters.minPrice = Number(minPrice);
-    if (maxPrice !== undefined) filters.maxPrice = Number(maxPrice);
-    if (rating !== undefined) filters.rating = Number(rating);
-
     const result = await TutorService.getAllTutors(filters);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Tutors retrieved successfully",
       ...result,
     });
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 };
 
 /**
- * @desc    Get a single tutor by ID
- * @route   GET /api/tutors/:id
- * @access  Public
+ * Get a single tutor by ID
+ * GET /api/tutors/:id
  */
 export const getTutorByIdController = async (
-  req: Request,
+  req: Request<{ id: string }>,
   res: Response,
   next: NextFunction,
 ) => {
   try {
     const tutorId = req.params.id;
 
-    // ❗ handle string[]
-    if (!tutorId || Array.isArray(tutorId)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid tutor ID",
-      });
+    if (!tutorId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid tutor ID" });
     }
 
     const tutor = await TutorService.getTutorById(tutorId);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Tutor retrieved successfully",
       data: tutor,
     });
-  } catch (error: any) {
-    next(error);
+  } catch (err: any) {
+    return res
+      .status(404)
+      .json({ success: false, message: err.message || "Tutor not found" });
   }
 };
 
 /**
- * @desc    Get tutor dashboard stats & sessions
- * @route   GET /api/tutor/dashboard
- * @access  Private (Tutor)
+ * Get tutor dashboard stats & sessions
+ * GET /api/tutor/dashboard
  */
 export const getTutorDashboardController = async (
   req: Request,
@@ -151,20 +139,17 @@ export const getTutorDashboardController = async (
     const userId = (req as any).user?.id;
 
     if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized",
-      });
+      return res.status(401).json({ success: false, message: "Unauthorized" });
     }
 
     const dashboardData = await TutorService.getTutorDashboard(userId);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      message: "Tutor dashboard data retrieved successfully",
+      message: "Dashboard data retrieved",
       data: dashboardData,
     });
-  } catch (error: any) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 };

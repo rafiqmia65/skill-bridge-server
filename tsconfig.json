@@ -11,7 +11,8 @@
     "moduleResolution": "nodenext",
     "customConditions": ["node"],
     "target": "ES2023",
-    "types": ["node"],
+    "types": ["node", "express"],
+    "typeRoots": ["./node_modules/@types"],
     // For nodejs:
     "lib": ["esnext", "dom"],
     // Other Outputs
