@@ -1,4 +1,4 @@
-import { RequestWithBody, AppResponse } from "../../types/express.js";
+import { Request, Response, NextFunction } from "express";
 import * as CategoryService from "./category.service.js";
 
 /**
@@ -7,14 +7,18 @@ import * as CategoryService from "./category.service.js";
  * @access  Private (Admin)
  */
 export const addCategory = async (
-  req: RequestWithBody<{ name: string }>, // POST request with body
-  res: AppResponse,
+  req: Request<{}, any, { name: string }>,
+  res: Response,
+  next: NextFunction,
 ) => {
   try {
     const { name } = req.body;
 
     if (!name) {
-      return res.status(400).json({ message: "Category name is required" });
+      return res.status(400).json({
+        success: false,
+        message: "Category name is required",
+      });
     }
 
     const category = await CategoryService.createCategory(name);
@@ -26,9 +30,13 @@ export const addCategory = async (
     });
   } catch (error: any) {
     if (error.code === "P2002") {
-      return res.status(400).json({ message: "Category already exists" });
+      return res.status(400).json({
+        success: false,
+        message: "Category already exists",
+      });
     }
-    res.status(500).json({ message: error.message });
+
+    next(error);
   }
 };
 
@@ -38,8 +46,9 @@ export const addCategory = async (
  * @access  Public
  */
 export const listCategories = async (
-  req: RequestWithBody<never>, // GET request has no body
-  res: AppResponse,
+  req: Request,
+  res: Response,
+  next: NextFunction,
 ) => {
   try {
     const categories = await CategoryService.getAllCategories();
@@ -49,10 +58,7 @@ export const listCategories = async (
       message: "Categories retrieved successfully",
       data: categories,
     });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+  } catch (error) {
+    next(error);
   }
 };

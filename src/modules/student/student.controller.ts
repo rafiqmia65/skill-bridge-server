@@ -1,35 +1,70 @@
-import { AppResponse, RequestWithUser } from "../../types/express.js";
+import { Request, Response, NextFunction } from "express";
 import { StudentProfileService } from "./student.service.js";
 
+/**
+ * @desc    Get student profile
+ * @route   GET /api/student/profile
+ * @access  Private (Student)
+ */
 export const getStudentProfileController = async (
-  req: RequestWithUser,
-  res: AppResponse,
+  req: Request,
+  res: Response,
+  next: NextFunction,
 ) => {
-  const userId = req.user!.id;
-  const profile = await StudentProfileService.getProfile(userId);
+  try {
+    const userId = (req as any).user?.id;
 
-  res.status(200).json({
-    success: true,
-    message: "Student profile retrieved successfully",
-    data: profile,
-  });
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    const profile = await StudentProfileService.getProfile(userId);
+
+    res.status(200).json({
+      success: true,
+      message: "Student profile retrieved successfully",
+      data: profile,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
+/**
+ * @desc    Update student profile
+ * @route   PUT /api/student/profile
+ * @access  Private (Student)
+ */
 export const updateStudentProfileController = async (
-  req: RequestWithUser<any>,
-  res: AppResponse,
+  req: Request,
+  res: Response,
+  next: NextFunction,
 ) => {
-  const userId = req.user!.id;
-  const payload = req.body;
+  try {
+    const userId = (req as any).user?.id;
+    const payload = req.body;
 
-  const updatedProfile = await StudentProfileService.updateProfile(
-    userId,
-    payload,
-  );
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
 
-  res.status(200).json({
-    success: true,
-    message: "Student profile updated successfully",
-    data: updatedProfile,
-  });
+    const updatedProfile = await StudentProfileService.updateProfile(
+      userId,
+      payload,
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Student profile updated successfully",
+      data: updatedProfile,
+    });
+  } catch (error) {
+    next(error);
+  }
 };

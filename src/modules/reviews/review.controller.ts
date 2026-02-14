@@ -1,4 +1,4 @@
-import { RequestWithUser, AppResponse } from "../../types/express.js";
+import { Request, Response, NextFunction } from "express";
 import * as ReviewService from "./review.service.js";
 
 /**
@@ -7,14 +7,23 @@ import * as ReviewService from "./review.service.js";
  * @access  Private (Student)
  */
 export const createReviewController = async (
-  req: RequestWithUser<{ bookingId: string; rating: number; comment: string }>,
-  res: AppResponse,
+  req: Request<{}, any, { bookingId: string; rating: number; comment: string }>,
+  res: Response,
+  next: NextFunction,
 ) => {
   try {
-    const studentId = req.user!.id; // authenticated student
+    const user = (req as any).user;
+
+    if (!user?.id) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
     const { bookingId, rating, comment } = req.body;
 
-    const review = await ReviewService.createReview(studentId, {
+    const review = await ReviewService.createReview(user.id, {
       bookingId,
       rating,
       comment,
@@ -26,9 +35,6 @@ export const createReviewController = async (
       data: review,
     });
   } catch (error: any) {
-    res.status(400).json({
-      success: false,
-      message: error.message || "Failed to submit review",
-    });
+    next(error);
   }
 };

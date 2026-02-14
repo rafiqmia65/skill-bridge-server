@@ -1,4 +1,4 @@
-import { RequestWithHeaders, AppResponse } from "../../types/express.js";
+import { Request, Response } from "express";
 import { authProxyService } from "./auth.proxy.service.js";
 import { auth } from "../../lib/auth.js";
 
@@ -23,8 +23,8 @@ function normalizeHeaders(
  * @route   POST /api/auth/register
  * @access  Public
  */
-export const register = (req: RequestWithHeaders, res: AppResponse) => {
-  return authProxyService(req as any, res, "/sign-up/email");
+export const register = (req: Request, res: Response) => {
+  return authProxyService(req, res, "/sign-up/email");
 };
 
 /**
@@ -32,8 +32,8 @@ export const register = (req: RequestWithHeaders, res: AppResponse) => {
  * @route   POST /api/auth/login
  * @access  Public
  */
-export const login = (req: RequestWithHeaders, res: AppResponse) => {
-  return authProxyService(req as any, res, "/sign-in/email");
+export const login = (req: Request, res: Response) => {
+  return authProxyService(req, res, "/sign-in/email");
 };
 
 /**
@@ -41,7 +41,7 @@ export const login = (req: RequestWithHeaders, res: AppResponse) => {
  * @route   GET /api/auth/me
  * @access  Public
  */
-export const me = async (req: RequestWithHeaders, res: AppResponse) => {
+export const me = async (req: Request, res: Response) => {
   try {
     const session = await auth.api.getSession({
       headers: normalizeHeaders(req.headers),

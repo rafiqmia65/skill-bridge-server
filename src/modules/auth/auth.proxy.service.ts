@@ -1,4 +1,4 @@
-import type { AppResponse, RequestWithHeaders } from "../../types/express.js";
+import { Request, Response } from "express";
 
 const BASE_URL = `${process.env.BACKEND_URL}/api/auth`;
 
@@ -6,8 +6,8 @@ const BASE_URL = `${process.env.BACKEND_URL}/api/auth`;
  * Proxy request to Better Auth backend
  */
 export async function authProxyService(
-  req: RequestWithHeaders<any>, // use headers + typed body
-  res: AppResponse,
+  req: Request, // standard Express request
+  res: Response,
   path: string,
 ): Promise<void> {
   try {
@@ -52,7 +52,7 @@ export async function authProxyService(
     const text = await fetchResponse.text();
     let data: Record<string, unknown> = {};
     try {
-      data = text ? (JSON.parse(text) as Record<string, unknown>) : {};
+      data = text ? JSON.parse(text) : {};
     } catch {
       data = { message: text };
     }

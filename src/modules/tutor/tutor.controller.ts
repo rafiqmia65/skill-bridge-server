@@ -1,4 +1,4 @@
-import { AppResponse, RequestWithUser } from "../../types/express.js";
+import { Request, Response, NextFunction } from "express";
 import * as TutorService from "./tutor.service.js";
 
 /**
@@ -7,12 +7,20 @@ import * as TutorService from "./tutor.service.js";
  * @access  Private (Tutor)
  */
 export const upsertTutorProfile = async (
-  req: RequestWithUser<any>, // body = any
-  res: AppResponse,
+  req: Request,
+  res: Response,
+  next: NextFunction,
 ) => {
   try {
-    const userId = req.user!.id;
+    const userId = (req as any).user?.id;
     const payload = req.body;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
 
     const profile = await TutorService.upsertTutorProfile(userId, payload);
 
@@ -22,10 +30,7 @@ export const upsertTutorProfile = async (
       data: profile,
     });
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message || "Failed to save tutor profile",
-    });
+    next(error);
   }
 };
 
@@ -35,12 +40,20 @@ export const upsertTutorProfile = async (
  * @access  Private (Tutor)
  */
 export const updateAvailabilityController = async (
-  req: RequestWithUser<{ slots: any[] }>,
-  res: AppResponse,
+  req: Request,
+  res: Response,
+  next: NextFunction,
 ) => {
   try {
-    const userId = req.user!.id;
+    const userId = (req as any).user?.id;
     const { slots } = req.body;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
 
     const availability = await TutorService.updateAvailability(userId, slots);
 
@@ -50,10 +63,7 @@ export const updateAvailabilityController = async (
       data: availability,
     });
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message || "Failed to update availability",
-    });
+    next(error);
   }
 };
 
@@ -63,8 +73,9 @@ export const updateAvailabilityController = async (
  * @access  Public
  */
 export const getAllTutorsController = async (
-  req: RequestWithUser<any, any, any>,
-  res: AppResponse,
+  req: Request,
+  res: Response,
+  next: NextFunction,
 ) => {
   try {
     const { search, category, minPrice, maxPrice, rating, page, limit } =
@@ -88,12 +99,8 @@ export const getAllTutorsController = async (
       message: "Tutors retrieved successfully",
       ...result,
     });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Something went wrong",
-      error,
-    });
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -103,11 +110,14 @@ export const getAllTutorsController = async (
  * @access  Public
  */
 export const getTutorByIdController = async (
-  req: RequestWithUser<any, any, { id: string }>,
-  res: AppResponse,
+  req: Request,
+  res: Response,
+  next: NextFunction,
 ) => {
   try {
     const tutorId = req.params.id;
+
+    // ❗ handle string[]
     if (!tutorId || Array.isArray(tutorId)) {
       return res.status(400).json({
         success: false,
@@ -123,10 +133,7 @@ export const getTutorByIdController = async (
       data: tutor,
     });
   } catch (error: any) {
-    res.status(404).json({
-      success: false,
-      message: error.message || "Tutor not found",
-    });
+    next(error);
   }
 };
 
@@ -136,11 +143,20 @@ export const getTutorByIdController = async (
  * @access  Private (Tutor)
  */
 export const getTutorDashboardController = async (
-  req: RequestWithUser,
-  res: AppResponse,
+  req: Request,
+  res: Response,
+  next: NextFunction,
 ) => {
   try {
-    const userId = req.user!.id;
+    const userId = (req as any).user?.id;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
     const dashboardData = await TutorService.getTutorDashboard(userId);
 
     res.status(200).json({
@@ -149,9 +165,6 @@ export const getTutorDashboardController = async (
       data: dashboardData,
     });
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message || "Failed to load tutor dashboard",
-    });
+    next(error);
   }
 };
