@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { RequestHandler } from "express";
 import * as TutorService from "./tutor.service.js";
 
 /* ================================
@@ -36,25 +36,23 @@ interface TutorFilters {
 /**
  * PUT /api/tutor/profile
  */
-export const upsertTutorProfile = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const upsertTutorProfile: RequestHandler = async (req, res, next) => {
   try {
-    const userId = req.user?.id;
+    // req
+    const userId = (req as any).user?.id;
     const payload = req.body;
 
     if (!userId) {
-      return res.status(401).json({
+      res.status(401).json({
         success: false,
         message: "Unauthorized",
       });
+      return;
     }
 
     const profile = await TutorService.upsertTutorProfile(userId, payload);
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       message: "Tutor profile saved successfully",
       data: profile,
@@ -67,25 +65,26 @@ export const upsertTutorProfile = async (
 /**
  * PUT /api/tutor/availability
  */
-export const updateAvailabilityController = async (
-  req: Request<{}, {}, AvailabilityBody>,
-  res: Response,
-  next: NextFunction,
+export const updateAvailabilityController: RequestHandler = async (
+  req,
+  res,
+  next,
 ) => {
   try {
-    const userId = req.user?.id;
-    const { slots } = req.body;
+    const userId = (req as any).user?.id;
+    const { slots } = req.body as AvailabilityBody;
 
     if (!userId) {
-      return res.status(401).json({
+      res.status(401).json({
         success: false,
         message: "Unauthorized",
       });
+      return;
     }
 
     const availability = await TutorService.updateAvailability(userId, slots);
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       message: "Availability updated successfully",
       data: availability,
@@ -98,14 +97,14 @@ export const updateAvailabilityController = async (
 /**
  * GET /api/tutors
  */
-export const getAllTutorsController = async (
-  req: Request<{}, {}, {}, TutorQuery>,
-  res: Response,
-  next: NextFunction,
+export const getAllTutorsController: RequestHandler = async (
+  req,
+  res,
+  next,
 ) => {
   try {
-    const { search, category, minPrice, maxPrice, rating, page, limit } =
-      req.query;
+    const query = req.query as unknown as TutorQuery;
+    const { search, category, minPrice, maxPrice, rating, page, limit } = query;
 
     const filters: TutorFilters = {
       page: page ? Number(page) : 1,
@@ -120,7 +119,7 @@ export const getAllTutorsController = async (
 
     const result = await TutorService.getAllTutors(filters);
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       message: "Tutors retrieved successfully",
       ...result,
@@ -133,30 +132,31 @@ export const getAllTutorsController = async (
 /**
  * GET /api/tutors/:id
  */
-export const getTutorByIdController = async (
-  req: Request<{ id: string }>,
-  res: Response,
-  next: NextFunction,
+export const getTutorByIdController: RequestHandler = async (
+  req,
+  res,
+  next,
 ) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
 
     if (!id) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: "Invalid tutor ID",
       });
+      return;
     }
 
     const tutor = await TutorService.getTutorById(id);
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       message: "Tutor retrieved successfully",
       data: tutor,
     });
   } catch (err: any) {
-    return res.status(404).json({
+    res.status(404).json({
       success: false,
       message: err?.message || "Tutor not found",
     });
@@ -166,24 +166,25 @@ export const getTutorByIdController = async (
 /**
  * GET /api/tutor/dashboard
  */
-export const getTutorDashboardController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
+export const getTutorDashboardController: RequestHandler = async (
+  req,
+  res,
+  next,
 ) => {
   try {
-    const userId = req.user?.id;
+    const userId = (req as any).user?.id;
 
     if (!userId) {
-      return res.status(401).json({
+      res.status(401).json({
         success: false,
         message: "Unauthorized",
       });
+      return;
     }
 
     const dashboardData = await TutorService.getTutorDashboard(userId);
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       message: "Dashboard data retrieved",
       data: dashboardData,
