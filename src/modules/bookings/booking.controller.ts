@@ -1,19 +1,24 @@
 import { Request, Response, NextFunction } from "express";
 import * as BookingService from "./booking.service.js";
 
+interface CreateBookingDTO {
+  tutorProfileId: string;
+  date: string;
+}
+
 /**
- * @desc Create a new booking
- * @route POST /api/bookings
+ * POST /api/bookings
+ * Private (Student)
  */
 export const createBookingController = async (
-  req: Request<{}, any, { tutorProfileId: string; date: string }>,
+  req: Request<{}, {}, CreateBookingDTO>,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    const user = (req as any).user;
+    const userId = req.user?.id;
 
-    if (!user?.id) {
+    if (!userId) {
       return res.status(401).json({
         success: false,
         message: "Unauthorized",
@@ -29,12 +34,12 @@ export const createBookingController = async (
       });
     }
 
-    const booking = await BookingService.createBooking(user.id, {
+    const booking = await BookingService.createBooking(userId, {
       tutorProfileId,
       date,
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Booking created successfully",
       data: booking,
@@ -45,8 +50,8 @@ export const createBookingController = async (
 };
 
 /**
- * @desc Get all bookings of logged-in student
- * @route GET /api/bookings/my
+ * GET /api/bookings/my
+ * Private (Student)
  */
 export const getMyBookingsController = async (
   req: Request,
@@ -54,18 +59,18 @@ export const getMyBookingsController = async (
   next: NextFunction,
 ) => {
   try {
-    const user = (req as any).user;
+    const userId = req.user?.id;
 
-    if (!user?.id) {
+    if (!userId) {
       return res.status(401).json({
         success: false,
         message: "Unauthorized",
       });
     }
 
-    const bookings = await BookingService.getMyBookings(user.id);
+    const bookings = await BookingService.getMyBookings(userId);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Bookings retrieved successfully",
       data: bookings,
@@ -76,8 +81,8 @@ export const getMyBookingsController = async (
 };
 
 /**
- * @desc Get single booking by ID
- * @route GET /api/bookings/:id
+ * GET /api/bookings/:id
+ * Private (Student)
  */
 export const getBookingByIdController = async (
   req: Request<{ id: string }>,
@@ -85,9 +90,9 @@ export const getBookingByIdController = async (
   next: NextFunction,
 ) => {
   try {
-    const user = (req as any).user;
+    const userId = req.user?.id;
 
-    if (!user?.id) {
+    if (!userId) {
       return res.status(401).json({
         success: false,
         message: "Unauthorized",
@@ -103,9 +108,9 @@ export const getBookingByIdController = async (
       });
     }
 
-    const booking = await BookingService.getBookingById(user.id, bookingId);
+    const booking = await BookingService.getBookingById(userId, bookingId);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Booking details retrieved successfully",
       data: booking,
@@ -116,8 +121,8 @@ export const getBookingByIdController = async (
 };
 
 /**
- * @desc Admin: Get all bookings
- * @route GET /api/bookings
+ * GET /api/bookings
+ * Private (Admin)
  */
 export const getAllBookingsController = async (
   req: Request,
@@ -127,7 +132,7 @@ export const getAllBookingsController = async (
   try {
     const bookings = await BookingService.getAllBookings();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "All bookings retrieved successfully",
       data: bookings,

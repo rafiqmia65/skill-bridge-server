@@ -1,20 +1,25 @@
 import { Request, Response, NextFunction } from "express";
 import * as ReviewService from "./review.service.js";
 
+interface CreateReviewDTO {
+  bookingId: string;
+  rating: number;
+  comment: string;
+}
+
 /**
- * @desc    Controller to create a review
- * @route   POST /api/reviews
- * @access  Private (Student)
+ * POST /api/reviews
+ * Private (Student)
  */
 export const createReviewController = async (
-  req: Request<{}, any, { bookingId: string; rating: number; comment: string }>,
+  req: Request<{}, {}, CreateReviewDTO>,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    const user = (req as any).user;
+    const userId = req.user?.id;
 
-    if (!user?.id) {
+    if (!userId) {
       return res.status(401).json({
         success: false,
         message: "Unauthorized",
@@ -23,18 +28,18 @@ export const createReviewController = async (
 
     const { bookingId, rating, comment } = req.body;
 
-    const review = await ReviewService.createReview(user.id, {
+    const review = await ReviewService.createReview(userId, {
       bookingId,
       rating,
       comment,
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Review submitted successfully",
       data: review,
     });
-  } catch (error: any) {
+  } catch (error) {
     next(error);
   }
 };

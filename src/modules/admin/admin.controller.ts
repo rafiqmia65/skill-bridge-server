@@ -1,10 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import * as AdminService from "./admin.service.js";
 
+interface UpdateUserStatusDTO {
+  status: "ACTIVE" | "BANNED";
+}
+
 /**
- * @desc    Get all users
- * @route   GET /api/admin/users
- * @access  Private (Admin)
+ * GET /api/admin/users
+ * Private (Admin)
  */
 export const getAllUsersController = async (
   req: Request,
@@ -14,7 +17,7 @@ export const getAllUsersController = async (
   try {
     const users = await AdminService.getAllUsers();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Users retrieved successfully",
       data: users,
@@ -25,12 +28,11 @@ export const getAllUsersController = async (
 };
 
 /**
- * @desc    Update user status
- * @route   PATCH /api/admin/users/:id
- * @access  Private (Admin)
+ * PATCH /api/admin/users/:id
+ * Private (Admin)
  */
 export const updateUserStatusController = async (
-  req: Request<{ id: string }, any, { status: "ACTIVE" | "BANNED" }>,
+  req: Request<{ id: string }, {}, UpdateUserStatusDTO>,
   res: Response,
   next: NextFunction,
 ) => {
@@ -54,7 +56,7 @@ export const updateUserStatusController = async (
 
     const updatedUser = await AdminService.updateUserStatus(userId, status);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "User status updated successfully",
       data: updatedUser,

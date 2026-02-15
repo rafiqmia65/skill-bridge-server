@@ -1,21 +1,55 @@
 import { Request, Response, NextFunction } from "express";
 import * as TutorService from "./tutor.service.js";
 
+/* ================================
+   Types
+================================ */
+
+interface AvailabilityBody {
+  slots: any[];
+}
+
+interface TutorQuery {
+  search?: string;
+  category?: string;
+  minPrice?: string;
+  maxPrice?: string;
+  rating?: string;
+  page?: string;
+  limit?: string;
+}
+
+interface TutorFilters {
+  search?: string;
+  category?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  rating?: number;
+  page: number;
+  limit: number;
+}
+
+/* ================================
+   Controllers
+================================ */
+
 /**
- * Create or update tutor profile
  * PUT /api/tutor/profile
  */
 export const upsertTutorProfile = async (
-  req: Request<{}, any, any>,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    const userId = (req as any).user?.id;
+    const userId = req.user?.id;
     const payload = req.body;
 
     if (!userId) {
-      return res.status(401).json({ success: false, message: "Unauthorized" });
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
     }
 
     const profile = await TutorService.upsertTutorProfile(userId, payload);
@@ -31,20 +65,22 @@ export const upsertTutorProfile = async (
 };
 
 /**
- * Update tutor availability slots
  * PUT /api/tutor/availability
  */
 export const updateAvailabilityController = async (
-  req: Request<{}, any, { slots: any[] }>,
+  req: Request<{}, {}, AvailabilityBody>,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    const userId = (req as any).user?.id;
+    const userId = req.user?.id;
     const { slots } = req.body;
 
     if (!userId) {
-      return res.status(401).json({ success: false, message: "Unauthorized" });
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
     }
 
     const availability = await TutorService.updateAvailability(userId, slots);
@@ -60,11 +96,10 @@ export const updateAvailabilityController = async (
 };
 
 /**
- * Get all tutors with optional filters
  * GET /api/tutors
  */
 export const getAllTutorsController = async (
-  req: Request<{}, any, any, Record<string, any>>,
+  req: Request<{}, {}, {}, TutorQuery>,
   res: Response,
   next: NextFunction,
 ) => {
@@ -72,15 +107,16 @@ export const getAllTutorsController = async (
     const { search, category, minPrice, maxPrice, rating, page, limit } =
       req.query;
 
-    const filters: any = {
-      search: search ? String(search) : undefined,
-      category: category ? String(category) : undefined,
-      minPrice: minPrice ? Number(minPrice) : undefined,
-      maxPrice: maxPrice ? Number(maxPrice) : undefined,
-      rating: rating ? Number(rating) : undefined,
+    const filters: TutorFilters = {
       page: page ? Number(page) : 1,
       limit: limit ? Number(limit) : 12,
     };
+
+    if (search) filters.search = search;
+    if (category) filters.category = category;
+    if (minPrice) filters.minPrice = Number(minPrice);
+    if (maxPrice) filters.maxPrice = Number(maxPrice);
+    if (rating) filters.rating = Number(rating);
 
     const result = await TutorService.getAllTutors(filters);
 
@@ -95,7 +131,6 @@ export const getAllTutorsController = async (
 };
 
 /**
- * Get a single tutor by ID
  * GET /api/tutors/:id
  */
 export const getTutorByIdController = async (
@@ -104,15 +139,16 @@ export const getTutorByIdController = async (
   next: NextFunction,
 ) => {
   try {
-    const tutorId = req.params.id;
+    const { id } = req.params;
 
-    if (!tutorId) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid tutor ID" });
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid tutor ID",
+      });
     }
 
-    const tutor = await TutorService.getTutorById(tutorId);
+    const tutor = await TutorService.getTutorById(id);
 
     return res.status(200).json({
       success: true,
@@ -120,14 +156,14 @@ export const getTutorByIdController = async (
       data: tutor,
     });
   } catch (err: any) {
-    return res
-      .status(404)
-      .json({ success: false, message: err.message || "Tutor not found" });
+    return res.status(404).json({
+      success: false,
+      message: err?.message || "Tutor not found",
+    });
   }
 };
 
 /**
- * Get tutor dashboard stats & sessions
  * GET /api/tutor/dashboard
  */
 export const getTutorDashboardController = async (
@@ -136,10 +172,13 @@ export const getTutorDashboardController = async (
   next: NextFunction,
 ) => {
   try {
-    const userId = (req as any).user?.id;
+    const userId = req.user?.id;
 
     if (!userId) {
-      return res.status(401).json({ success: false, message: "Unauthorized" });
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
     }
 
     const dashboardData = await TutorService.getTutorDashboard(userId);

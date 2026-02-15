@@ -11,10 +11,10 @@
     "moduleResolution": "nodenext",
     "customConditions": ["node"],
     "target": "ES2023",
-    "types": ["node", "express"],
-    "typeRoots": ["./node_modules/@types"],
+    "types": ["node"],
+    "typeRoots": ["./node_modules/@types", "./src/types"],
     // For nodejs:
-    "lib": ["esnext", "dom"],
+    "lib": ["esnext"],
     // Other Outputs
     "sourceMap": true,
     "declaration": true,

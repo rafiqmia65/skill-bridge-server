@@ -2,16 +2,13 @@ import { Request, Response } from "express";
 
 const BASE_URL = `${process.env.BACKEND_URL}/api/auth`;
 
-/**
- * Proxy request to Better Auth backend
- */
 export async function authProxyService(
-  req: Request, // standard Express request
+  req: Request,
   res: Response,
   path: string,
 ): Promise<void> {
   try {
-    // Normalize headers for fetch
+    // Normalize headers
     const origin = Array.isArray(req.headers.origin)
       ? req.headers.origin[0]
       : req.headers.origin;
@@ -22,33 +19,34 @@ export async function authProxyService(
       ? req.headers.authorization[0]
       : req.headers.authorization;
 
-    // Prepare request body
-    let body: BodyInit | null = null;
-    if (!["GET", "HEAD"].includes(req.method) && req.body) {
-      body = JSON.stringify(req.body);
-    }
-
-    const init: RequestInit = {
-      method: req.method,
-      headers: {
-        "Content-Type": "application/json",
-        origin: origin ?? process.env.APP_URL ?? "",
-        cookie: cookie ?? "",
-        ...(authorization && { authorization }),
-      },
-      body,
+    // Prepare request headers
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      origin: origin ?? process.env.APP_URL ?? "",
+      cookie: cookie ?? "",
+      ...(authorization && { authorization }),
     };
 
-    // Call the backend
+    // Build RequestInit object
+    const init: RequestInit = {
+      method: req.method,
+      headers,
+      // Only include body for methods that support it
+      ...(req.method !== "GET" && req.method !== "HEAD" && req.body
+        ? { body: JSON.stringify(req.body) }
+        : {}),
+    };
+
+    // Call backend
     const fetchResponse = await fetch(`${BASE_URL}${path}`, init);
 
-    // Forward any Set-Cookie header
+    // Forward Set-Cookie header if present
     const setCookie = fetchResponse.headers.get("set-cookie");
     if (setCookie) {
       res.setHeader("Set-Cookie", setCookie);
     }
 
-    // Parse response body
+    // Parse response body safely
     const text = await fetchResponse.text();
     let data: Record<string, unknown> = {};
     try {
@@ -57,17 +55,13 @@ export async function authProxyService(
       data = { message: text };
     }
 
-    // Respond to client
     res.status(fetchResponse.status).json(data);
   } catch (error: unknown) {
     console.error("AUTH PROXY SERVICE ERROR:", error);
 
-    const errorMessage =
-      error instanceof Error ? error.message : "Internal server error";
-
     res.status(500).json({
       code: "PROXY_ERROR",
-      message: errorMessage,
+      message: error instanceof Error ? error.message : "Internal server error",
     });
   }
 }

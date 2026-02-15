@@ -3,7 +3,7 @@ import { auth } from "../lib/auth.js";
 
 type Role = "ADMIN" | "TUTOR" | "STUDENT";
 
-interface AuthenticatedRequest extends Request {
+export interface AuthenticatedRequest extends Request {
   user?: {
     id: string;
     role: Role;
@@ -11,6 +11,9 @@ interface AuthenticatedRequest extends Request {
   };
 }
 
+/**
+ * Middleware to authorize users based on roles
+ */
 export const authorize =
   (...allowedRoles: Role[]) =>
   async (
@@ -19,29 +22,39 @@ export const authorize =
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const stringHeaders: Record<string, string> = {};
-
+      // Convert headers to string-only record
+      const headers: Record<string, string> = {};
       for (const key in req.headers) {
         const value = req.headers[key];
         if (typeof value === "string") {
-          stringHeaders[key] = value;
+          headers[key] = value;
         }
       }
 
-      const session = await auth.api.getSession({
-        headers: stringHeaders,
-      });
+      // Get current session
+      const session = await auth.api.getSession({ headers });
 
       if (!session?.user) {
         res.status(401).json({ message: "Unauthorized" });
         return;
       }
 
-      // Attach user
-      req.user = session.user as any;
+      // Attach user to request
+      // Only pick necessary fields and typecast properly
+      const { id, role, ...rest } = session.user;
+      if (!id || !role) {
+        res.status(401).json({ message: "Unauthorized" });
+        return;
+      }
 
-      // Use session.user instead of req.user for role check
-      if (!allowedRoles.includes(session.user.role as Role)) {
+      req.user = {
+        id,
+        role: role as Role,
+        ...rest,
+      };
+
+      // Role check
+      if (!allowedRoles.includes(req.user.role)) {
         res
           .status(403)
           .json({ message: "Forbidden: insufficient permissions" });

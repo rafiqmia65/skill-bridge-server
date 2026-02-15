@@ -2,9 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { StudentProfileService } from "./student.service.js";
 
 /**
- * @desc    Get student profile
- * @route   GET /api/student/profile
- * @access  Private (Student)
+ * GET /api/student/profile
+ * Private (Student)
  */
 export const getStudentProfileController = async (
   req: Request,
@@ -12,7 +11,7 @@ export const getStudentProfileController = async (
   next: NextFunction,
 ) => {
   try {
-    const userId = (req as any).user?.id;
+    const userId = req.user?.id;
 
     if (!userId) {
       return res.status(401).json({
@@ -23,7 +22,7 @@ export const getStudentProfileController = async (
 
     const profile = await StudentProfileService.getProfile(userId);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Student profile retrieved successfully",
       data: profile,
@@ -34,9 +33,8 @@ export const getStudentProfileController = async (
 };
 
 /**
- * @desc    Update student profile
- * @route   PUT /api/student/profile
- * @access  Private (Student)
+ * PUT /api/student/profile
+ * Private (Student)
  */
 export const updateStudentProfileController = async (
   req: Request,
@@ -44,8 +42,8 @@ export const updateStudentProfileController = async (
   next: NextFunction,
 ) => {
   try {
-    const userId = (req as any).user?.id;
-    const payload = req.body;
+    const userId = req.user?.id;
+    const payload = req.body; // optionally type this if you have a DTO/interface
 
     if (!userId) {
       return res.status(401).json({
@@ -59,7 +57,7 @@ export const updateStudentProfileController = async (
       payload,
     );
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Student profile updated successfully",
       data: updatedProfile,

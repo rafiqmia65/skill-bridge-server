@@ -1,13 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 import * as CategoryService from "./category.service.js";
 
+interface CreateCategoryDTO {
+  name: string;
+}
+
 /**
- * @desc    Add a new category (Admin only)
- * @route   POST /api/categories
- * @access  Private (Admin)
+ * POST /api/categories
+ * Private (Admin)
  */
 export const addCategory = async (
-  req: Request<{}, any, { name: string }>,
+  req: Request<{}, {}, CreateCategoryDTO>,
   res: Response,
   next: NextFunction,
 ) => {
@@ -23,12 +26,13 @@ export const addCategory = async (
 
     const category = await CategoryService.createCategory(name);
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Category created successfully",
       data: category,
     });
   } catch (error: any) {
+    // Prisma unique constraint error
     if (error.code === "P2002") {
       return res.status(400).json({
         success: false,
@@ -41,9 +45,8 @@ export const addCategory = async (
 };
 
 /**
- * @desc    List all categories (Public)
- * @route   GET /api/categories
- * @access  Public
+ * GET /api/categories
+ * Public
  */
 export const listCategories = async (
   req: Request,
@@ -53,7 +56,7 @@ export const listCategories = async (
   try {
     const categories = await CategoryService.getAllCategories();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Categories retrieved successfully",
       data: categories,

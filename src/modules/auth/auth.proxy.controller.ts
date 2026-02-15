@@ -19,27 +19,24 @@ function normalizeHeaders(
 }
 
 /**
- * @desc    Proxy register request to Better Auth
- * @route   POST /api/auth/register
- * @access  Public
+ * POST /api/auth/register
+ * Public
  */
 export const register = (req: Request, res: Response) => {
   return authProxyService(req, res, "/sign-up/email");
 };
 
 /**
- * @desc    Proxy login request to Better Auth
- * @route   POST /api/auth/login
- * @access  Public
+ * POST /api/auth/login
+ * Public
  */
 export const login = (req: Request, res: Response) => {
   return authProxyService(req, res, "/sign-in/email");
 };
 
 /**
- * @desc    Retrieve current session information
- * @route   GET /api/auth/me
- * @access  Public
+ * GET /api/auth/me
+ * Public
  */
 export const me = async (req: Request, res: Response) => {
   try {
@@ -62,7 +59,7 @@ export const me = async (req: Request, res: Response) => {
     console.error("GET SESSION ERROR:", error);
     return res.status(500).json({
       code: "SESSION_ERROR",
-      message: error.message,
+      message: error?.message ?? "Unknown error",
     });
   }
 };
