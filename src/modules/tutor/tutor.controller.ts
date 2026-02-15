@@ -1,4 +1,4 @@
-import { RequestHandler } from "express";
+import { Request, Response, NextFunction, RequestHandler } from "express";
 import * as TutorService from "./tutor.service.js";
 
 /* ================================
@@ -36,9 +36,12 @@ interface TutorFilters {
 /**
  * PUT /api/tutor/profile
  */
-export const upsertTutorProfile: RequestHandler = async (req, res, next) => {
+export const upsertTutorProfile: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
   try {
-    // req as any ব্যবহার করা হয়েছে যাতে user এরর না আসে
     const userId = (req as any).user?.id;
     const payload = req.body;
 
@@ -66,10 +69,10 @@ export const upsertTutorProfile: RequestHandler = async (req, res, next) => {
  * PUT /api/tutor/availability
  */
 export const updateAvailabilityController: RequestHandler = async (
-  req,
-  res,
-  next,
-) => {
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
   try {
     const userId = (req as any).user?.id;
     const { slots } = req.body as AvailabilityBody;
@@ -98,12 +101,11 @@ export const updateAvailabilityController: RequestHandler = async (
  * GET /api/tutors
  */
 export const getAllTutorsController: RequestHandler = async (
-  req,
-  res,
-  next,
-) => {
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
   try {
-    // Express 5 query typing fix
     const query = req.query as unknown as TutorQuery;
     const { search, category, minPrice, maxPrice, rating, page, limit } = query;
 
@@ -134,10 +136,10 @@ export const getAllTutorsController: RequestHandler = async (
  * GET /api/tutors/:id
  */
 export const getTutorByIdController: RequestHandler = async (
-  req,
-  res,
-  next,
-) => {
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
   try {
     const { id } = req.params;
 
@@ -168,10 +170,10 @@ export const getTutorByIdController: RequestHandler = async (
  * GET /api/tutor/dashboard
  */
 export const getTutorDashboardController: RequestHandler = async (
-  req,
-  res,
-  next,
-) => {
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
   try {
     const userId = (req as any).user?.id;
 
