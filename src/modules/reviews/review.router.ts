@@ -1,9 +1,9 @@
-import express, { Router } from "express";
+import express from "express";
 import { Role } from "../../constants/role.js";
 import { authorize } from "../../middlewares/authorize.js";
 import { createReviewController } from "./review.controller.js";
 
-const reviewRouter = Router();
+const reviewRouter: ReturnType<typeof express.Router> = express.Router();
 
 /**
  * @route   POST /api/reviews

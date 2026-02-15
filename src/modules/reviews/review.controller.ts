@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { RequestHandler } from "express";
 import * as ReviewService from "./review.service.js";
 
 interface CreateReviewDTO {
@@ -11,11 +11,11 @@ interface CreateReviewDTO {
  * POST /api/reviews
  * Private (Student)
  */
-export const createReviewController = async (
-  req: Request<{}, {}, CreateReviewDTO>,
-  res: Response,
-  next: NextFunction,
-) => {
+export const createReviewController: RequestHandler<
+  {},
+  {},
+  CreateReviewDTO
+> = async (req, res, next) => {
   try {
     const userId = req.user?.id;
 
@@ -39,7 +39,7 @@ export const createReviewController = async (
       message: "Review submitted successfully",
       data: review,
     });
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 };

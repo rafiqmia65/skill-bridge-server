@@ -1,4 +1,4 @@
-import Router from "express";
+import express from "express";
 import { authorize } from "../../middlewares/authorize.js";
 import { Role } from "../../constants/role.js";
 import {
@@ -6,7 +6,7 @@ import {
   updateUserStatusController,
 } from "./admin.controller.js";
 
-const adminRouter = Router();
+const adminRouter: ReturnType<typeof express.Router> = express.Router();
 
 /**
  * @route   GET /api/admin/users

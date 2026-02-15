@@ -1,48 +1,12 @@
-import { Request, Response, NextFunction, RequestHandler } from "express";
+import { RequestHandler } from "express";
 import * as TutorService from "./tutor.service.js";
-
-/* ================================
-   Types
-================================ */
-
-interface AvailabilityBody {
-  slots: any[];
-}
-
-interface TutorQuery {
-  search?: string;
-  category?: string;
-  minPrice?: string;
-  maxPrice?: string;
-  rating?: string;
-  page?: string;
-  limit?: string;
-}
-
-interface TutorFilters {
-  search?: string;
-  category?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  rating?: number;
-  page: number;
-  limit: number;
-}
-
-/* ================================
-   Controllers
-================================ */
 
 /**
  * PUT /api/tutor/profile
  */
-export const upsertTutorProfile: RequestHandler = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<any> => {
+export const upsertTutorProfile: RequestHandler = async (req, res, next) => {
   try {
-    const userId = (req as any).user?.id;
+    const userId = req.user?.id;
     const payload = req.body;
 
     if (!userId) {
@@ -68,13 +32,13 @@ export const upsertTutorProfile: RequestHandler = async (
  * PUT /api/tutor/availability
  */
 export const updateAvailabilityController: RequestHandler = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<any> => {
+  req,
+  res,
+  next,
+) => {
   try {
-    const userId = (req as any).user?.id;
-    const { slots } = req.body as AvailabilityBody;
+    const userId = req.user?.id;
+    const { slots } = req.body;
 
     if (!userId) {
       return res.status(401).json({
@@ -99,26 +63,25 @@ export const updateAvailabilityController: RequestHandler = async (
  * GET /api/tutors
  */
 export const getAllTutorsController: RequestHandler = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<any> => {
+  req,
+  res,
+  next,
+) => {
   try {
-    const query = req.query as unknown as TutorQuery;
-    const { search, category, minPrice, maxPrice, rating, page, limit } = query;
+    const { search, category, minPrice, maxPrice, rating, page, limit } =
+      req.query as any;
 
-    const filters: TutorFilters = {
+    const filters = {
       page: page ? Number(page) : 1,
       limit: limit ? Number(limit) : 12,
+      search: search as string,
+      category: category as string,
+      minPrice: Number(minPrice),
+      maxPrice: Number(maxPrice),
+      rating: Number(rating),
     };
 
-    if (search) filters.search = search;
-    if (category) filters.category = category;
-    if (minPrice) filters.minPrice = Number(minPrice);
-    if (maxPrice) filters.maxPrice = Number(maxPrice);
-    if (rating) filters.rating = Number(rating);
-
-    const result = await TutorService.getAllTutors(filters);
+    const result = await TutorService.getAllTutors(filters as any);
 
     return res.status(200).json({
       success: true,
@@ -133,22 +96,15 @@ export const getAllTutorsController: RequestHandler = async (
 /**
  * GET /api/tutors/:id
  */
-export const getTutorByIdController: RequestHandler = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<any> => {
+export const getTutorByIdController: RequestHandler<{ id: string }> = async (
+  req,
+  res,
+  next,
+) => {
   try {
     const { id } = req.params;
 
-    if (!id) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid tutor ID",
-      });
-    }
-
-    const tutor = await TutorService.getTutorById(id as string);
+    const tutor = await TutorService.getTutorById(id);
 
     return res.status(200).json({
       success: true,
@@ -167,12 +123,12 @@ export const getTutorByIdController: RequestHandler = async (
  * GET /api/tutor/dashboard
  */
 export const getTutorDashboardController: RequestHandler = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<any> => {
+  req,
+  res,
+  next,
+) => {
   try {
-    const userId = (req as any).user?.id;
+    const userId = req.user?.id;
 
     if (!userId) {
       return res.status(401).json({

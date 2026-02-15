@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { RequestHandler } from "express";
 import * as CategoryService from "./category.service.js";
 
 interface CreateCategoryDTO {
@@ -9,10 +9,10 @@ interface CreateCategoryDTO {
  * POST /api/categories
  * Private (Admin)
  */
-export const addCategory = async (
-  req: Request<{}, {}, CreateCategoryDTO>,
-  res: Response,
-  next: NextFunction,
+export const addCategory: RequestHandler<{}, {}, CreateCategoryDTO> = async (
+  req,
+  res,
+  next,
 ) => {
   try {
     const { name } = req.body;
@@ -31,16 +31,16 @@ export const addCategory = async (
       message: "Category created successfully",
       data: category,
     });
-  } catch (error: any) {
-    // Prisma unique constraint error
-    if (error.code === "P2002") {
+  } catch (err: any) {
+    // Handle unique constraint error (Prisma)
+    if (err.code === "P2002") {
       return res.status(400).json({
         success: false,
         message: "Category already exists",
       });
     }
 
-    next(error);
+    next(err);
   }
 };
 
@@ -48,11 +48,7 @@ export const addCategory = async (
  * GET /api/categories
  * Public
  */
-export const listCategories = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const listCategories: RequestHandler = async (req, res, next) => {
   try {
     const categories = await CategoryService.getAllCategories();
 
@@ -61,7 +57,7 @@ export const listCategories = async (
       message: "Categories retrieved successfully",
       data: categories,
     });
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 };

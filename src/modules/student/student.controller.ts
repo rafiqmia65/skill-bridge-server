@@ -1,14 +1,14 @@
-import { Request, Response, NextFunction } from "express";
+import { RequestHandler } from "express";
 import { StudentProfileService } from "./student.service.js";
 
 /**
  * GET /api/student/profile
  * Private (Student)
  */
-export const getStudentProfileController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
+export const getStudentProfileController: RequestHandler = async (
+  req,
+  res,
+  next,
 ) => {
   try {
     const userId = req.user?.id;
@@ -27,8 +27,8 @@ export const getStudentProfileController = async (
       message: "Student profile retrieved successfully",
       data: profile,
     });
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -36,14 +36,14 @@ export const getStudentProfileController = async (
  * PUT /api/student/profile
  * Private (Student)
  */
-export const updateStudentProfileController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
+export const updateStudentProfileController: RequestHandler = async (
+  req,
+  res,
+  next,
 ) => {
   try {
     const userId = req.user?.id;
-    const payload = req.body; // optionally type this if you have a DTO/interface
+    const payload = req.body; // you can type this if you have a DTO/interface
 
     if (!userId) {
       return res.status(401).json({
@@ -62,7 +62,7 @@ export const updateStudentProfileController = async (
       message: "Student profile updated successfully",
       data: updatedProfile,
     });
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 };

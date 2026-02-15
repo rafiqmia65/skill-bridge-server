@@ -1,9 +1,13 @@
-import { Router } from "express";
+import express from "express";
 import { authorize } from "../../middlewares/authorize.js";
 import { Role } from "../../constants/role.js";
-import { getTutorDashboardController, updateAvailabilityController, upsertTutorProfile } from "./tutor.controller.js";
+import {
+  getTutorDashboardController,
+  updateAvailabilityController,
+  upsertTutorProfile,
+} from "./tutor.controller.js";
 
-const tutorRouter = Router();
+const tutorRouter: ReturnType<typeof express.Router> = express.Router();
 
 /**
  * @route   PUT /api/tutor/profile
@@ -25,6 +29,8 @@ tutorRouter.put(
 
 /**
  * @route   GET /api/tutor/dashboard
+ * @desc    Get tutor dashboard data
+ * @access  Private (Tutor)
  */
 tutorRouter.get(
   "/dashboard",

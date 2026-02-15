@@ -1,4 +1,4 @@
-import { Router } from "express";
+import express from "express";
 import { authorize } from "../../middlewares/authorize.js";
 import { Role } from "../../constants/role.js";
 import {
@@ -8,7 +8,7 @@ import {
   getMyBookingsController,
 } from "./booking.controller.js";
 
-const bookingRouter = Router();
+const bookingRouter: ReturnType<typeof express.Router> = express.Router();
 
 /**
  * @route   POST /api/bookings

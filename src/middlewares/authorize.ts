@@ -1,33 +1,22 @@
-import { Request, Response, NextFunction } from "express";
+import { RequestHandler } from "express";
 import { auth } from "../lib/auth.js";
 
 type Role = "ADMIN" | "TUTOR" | "STUDENT";
 
-export interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    role: Role;
-    [key: string]: any;
-  };
-}
-
 /**
  * Middleware to authorize users based on roles
  */
-export const authorize =
-  (...allowedRoles: Role[]) =>
-  async (
-    req: AuthenticatedRequest,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> => {
+export const authorize = (...allowedRoles: Role[]): RequestHandler => {
+  return async (req, res, next) => {
     try {
-      // Convert headers to string-only record
+      // Convert headers to string-only record for Better-Auth
       const headers: Record<string, string> = {};
       for (const key in req.headers) {
         const value = req.headers[key];
         if (typeof value === "string") {
           headers[key] = value;
+        } else if (Array.isArray(value)) {
+          headers[key] = value.join(", ");
         }
       }
 
@@ -35,16 +24,14 @@ export const authorize =
       const session = await auth.api.getSession({ headers });
 
       if (!session?.user) {
-        res.status(401).json({ message: "Unauthorized" });
-        return;
+        return res.status(401).json({ message: "Unauthorized" });
       }
 
-      // Attach user to request
-      // Only pick necessary fields and typecast properly
+      // Attach user data to request object
       const { id, role, ...rest } = session.user;
+
       if (!id || !role) {
-        res.status(401).json({ message: "Unauthorized" });
-        return;
+        return res.status(401).json({ message: "Unauthorized" });
       }
 
       req.user = {
@@ -54,16 +41,16 @@ export const authorize =
       };
 
       // Role check
-      if (!allowedRoles.includes(req.user.role)) {
-        res
-          .status(403)
-          .json({ message: "Forbidden: insufficient permissions" });
-        return;
+      if (allowedRoles.length > 0 && !allowedRoles.includes(req.user.role)) {
+        return res.status(403).json({
+          message: "Forbidden: insufficient permissions",
+        });
       }
 
-      next();
+      return next();
     } catch (error) {
       console.error("Authorize middleware error:", error);
-      res.status(401).json({ message: "Unauthorized" });
+      return res.status(401).json({ message: "Unauthorized" });
     }
   };
+};

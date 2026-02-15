@@ -1,7 +1,7 @@
-import { Router } from "express";
+import express from "express";
 import { login, me, register } from "./auth.proxy.controller.js";
 
-const authProxyRouter = Router();
+const authProxyRouter: ReturnType<typeof express.Router> = express.Router();
 
 /**
  * @route   POST /api/auth/register

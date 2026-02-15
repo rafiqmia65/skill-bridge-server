@@ -1,10 +1,9 @@
-import { Request, Response } from "express";
+import { RequestHandler } from "express";
 import { authProxyService } from "./auth.proxy.service.js";
 import { auth } from "../../lib/auth.js";
 
 /**
- * Convert Express headers (string | string[] | undefined) into
- * string-to-string mapping suitable for fetch or auth SDK calls.
+ * Convert Express headers into a string-to-string mapping suitable for fetch or SDK calls
  */
 function normalizeHeaders(
   headers: Record<string, string | string[] | undefined>,
@@ -20,25 +19,27 @@ function normalizeHeaders(
 
 /**
  * POST /api/auth/register
- * Public
  */
-export const register = (req: Request, res: Response) => {
-  return authProxyService(req, res, "/sign-up/email");
+export const register: RequestHandler = (req, res, next) => {
+  // authProxyService 'any'
+  return (authProxyService("/sign-up/email") as any)(req, res, next);
 };
 
 /**
  * POST /api/auth/login
- * Public
  */
-export const login = (req: Request, res: Response) => {
-  return authProxyService(req, res, "/sign-in/email");
+export const login: RequestHandler = (req, res, next) => {
+  return (authProxyService("/sign-in/email") as any)(req, res, next);
 };
 
 /**
  * GET /api/auth/me
- * Public
  */
-export const me = async (req: Request, res: Response) => {
+export const me: RequestHandler = (async (
+  req: any,
+  res: any,
+  next: any,
+): Promise<any> => {
   try {
     const session = await auth.api.getSession({
       headers: normalizeHeaders(req.headers),
@@ -62,4 +63,4 @@ export const me = async (req: Request, res: Response) => {
       message: error?.message ?? "Unknown error",
     });
   }
-};
+}) as RequestHandler;
