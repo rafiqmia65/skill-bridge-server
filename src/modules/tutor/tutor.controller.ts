@@ -40,22 +40,21 @@ export const upsertTutorProfile: RequestHandler = async (
   req: Request,
   res: Response,
   next: NextFunction,
-): Promise<void> => {
+): Promise<any> => {
   try {
     const userId = (req as any).user?.id;
     const payload = req.body;
 
     if (!userId) {
-      res.status(401).json({
+      return res.status(401).json({
         success: false,
         message: "Unauthorized",
       });
-      return;
     }
 
     const profile = await TutorService.upsertTutorProfile(userId, payload);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Tutor profile saved successfully",
       data: profile,
@@ -72,22 +71,21 @@ export const updateAvailabilityController: RequestHandler = async (
   req: Request,
   res: Response,
   next: NextFunction,
-): Promise<void> => {
+): Promise<any> => {
   try {
     const userId = (req as any).user?.id;
     const { slots } = req.body as AvailabilityBody;
 
     if (!userId) {
-      res.status(401).json({
+      return res.status(401).json({
         success: false,
         message: "Unauthorized",
       });
-      return;
     }
 
     const availability = await TutorService.updateAvailability(userId, slots);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Availability updated successfully",
       data: availability,
@@ -104,7 +102,7 @@ export const getAllTutorsController: RequestHandler = async (
   req: Request,
   res: Response,
   next: NextFunction,
-): Promise<void> => {
+): Promise<any> => {
   try {
     const query = req.query as unknown as TutorQuery;
     const { search, category, minPrice, maxPrice, rating, page, limit } = query;
@@ -122,7 +120,7 @@ export const getAllTutorsController: RequestHandler = async (
 
     const result = await TutorService.getAllTutors(filters);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Tutors retrieved successfully",
       ...result,
@@ -139,27 +137,26 @@ export const getTutorByIdController: RequestHandler = async (
   req: Request,
   res: Response,
   next: NextFunction,
-): Promise<void> => {
+): Promise<any> => {
   try {
     const { id } = req.params;
 
     if (!id) {
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message: "Invalid tutor ID",
       });
-      return;
     }
 
     const tutor = await TutorService.getTutorById(id as string);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Tutor retrieved successfully",
       data: tutor,
     });
   } catch (err: any) {
-    res.status(404).json({
+    return res.status(404).json({
       success: false,
       message: err?.message || "Tutor not found",
     });
@@ -173,21 +170,20 @@ export const getTutorDashboardController: RequestHandler = async (
   req: Request,
   res: Response,
   next: NextFunction,
-): Promise<void> => {
+): Promise<any> => {
   try {
     const userId = (req as any).user?.id;
 
     if (!userId) {
-      res.status(401).json({
+      return res.status(401).json({
         success: false,
         message: "Unauthorized",
       });
-      return;
     }
 
     const dashboardData = await TutorService.getTutorDashboard(userId);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Dashboard data retrieved",
       data: dashboardData,
