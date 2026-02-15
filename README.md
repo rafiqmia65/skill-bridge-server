@@ -1,7 +1,3 @@
-Absolutely! I can polish your README into a **clean, professional, backend-focused documentation** with better structure, flow diagrams, and explanations so that anyone looking at it will quickly understand your backend. Here’s the improved version:
-
----
-
 # SkillBridge Backend 🎓
 
 ## Project Overview
