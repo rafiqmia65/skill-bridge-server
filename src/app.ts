@@ -44,7 +44,7 @@ app.use("/api/auth", authProxyRoutes);
 /**
  * Catch-all route for Better Auth internal endpoints
  */
-app.all("/api/auth/*split", toNodeHandler(auth));
+app.all("/api/auth/*", toNodeHandler(auth));
 
 /**
  * Tutor-specific routes
