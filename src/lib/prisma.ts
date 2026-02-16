@@ -1,12 +1,14 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 
-// ** This is local development only, in production we will use the generated Prisma client directly
-// import { PrismaClient } from "../../generated/prisma/client.js";
+let PrismaClientClass: any;
 
-//  ** this is a vercel and render compatible way to import PrismaClient without breaking the build
-const PrismaClient: any = require("@prisma/client").PrismaClient;
-
+if (process.env.NODE_ENV === "production") {
+  PrismaClientClass = require("@prisma/client").PrismaClient;
+} else {
+  PrismaClientClass = (await import("../../generated/prisma/client.js"))
+    .PrismaClient;
+}
 // Connection string
 const connectionString = process.env.DATABASE_URL as string;
 
@@ -14,6 +16,6 @@ const connectionString = process.env.DATABASE_URL as string;
 const adapter = new PrismaPg({ connectionString });
 
 // Initialize Prisma client with adapter
-const prisma = new PrismaClient({ adapter });
+const prisma = new PrismaClientClass({ adapter });
 
 export { prisma };
