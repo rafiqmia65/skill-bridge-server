@@ -1,14 +1,7 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "@prisma/client";
 
-let PrismaClientClass: any;
-
-if (process.env.NODE_ENV === "production") {
-  PrismaClientClass = require("@prisma/client").PrismaClient;
-} else {
-  PrismaClientClass = (await import("../../generated/prisma/client.js"))
-    .PrismaClient;
-}
 // Connection string
 const connectionString = process.env.DATABASE_URL as string;
 
@@ -16,6 +9,6 @@ const connectionString = process.env.DATABASE_URL as string;
 const adapter = new PrismaPg({ connectionString });
 
 // Initialize Prisma client with adapter
-const prisma = new PrismaClientClass({ adapter });
+const prisma = new PrismaClient({ adapter });
 
 export { prisma };

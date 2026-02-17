@@ -9,9 +9,11 @@ async function startServer() {
     await prisma.$connect();
     console.log("✅ Database connected successfully");
 
-    app.listen(port, () => {
-      console.log(`🚀 Server is running on http://localhost:${port}`);
-    });
+    if (process.env.NODE_ENV !== "production") {
+      app.listen(port, () => {
+        console.log(`🚀 Server running on http://localhost:${port}`);
+      });
+    }
   } catch (error) {
     console.error("❌ Failed to start server:", error);
     process.exit(1);
