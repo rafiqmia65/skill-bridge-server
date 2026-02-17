@@ -20,16 +20,51 @@ function normalizeHeaders(
 /**
  * POST /api/auth/register
  */
-export const register: RequestHandler = (req, res, next) => {
-  // authProxyService 'any'
-  return (authProxyService("/sign-up/email") as any)(req, res, next);
+export const register: RequestHandler = async (req, res, next) => {
+  try {
+    const { email, password, name, role } = req.body;
+    const response = await auth.api.signUpEmail({
+      body: {
+        email,
+        password,
+        name,
+        role,
+      },
+      headers: normalizeHeaders(req.headers),
+    });
+
+    return res.status(200).json(response);
+  } catch (error: any) {
+    console.error("REGISTER ERROR:", error);
+    return res.status(error.statusCode || 500).json({
+      code: error.code || "REGISTER_ERROR",
+      message: error.message || "Failed to register",
+    });
+  }
 };
 
 /**
  * POST /api/auth/login
  */
-export const login: RequestHandler = (req, res, next) => {
-  return (authProxyService("/sign-in/email") as any)(req, res, next);
+export const login: RequestHandler = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    const response = await auth.api.signInEmail({
+      body: {
+        email,
+        password,
+      },
+      headers: normalizeHeaders(req.headers),
+    });
+
+    return res.status(200).json(response);
+  } catch (error: any) {
+    console.error("LOGIN ERROR:", error);
+    return res.status(error.statusCode || 500).json({
+      code: error.code || "LOGIN_ERROR",
+      message: error.message || "Failed to login",
+    });
+  }
 };
 
 /**
