@@ -30,37 +30,27 @@ app.use(express.urlencoded({ extended: true }));
 const allowedOrigins = [
   process.env.APP_URL || "http://localhost:3000",
   process.env.PROD_APP_URL,
-  "http://localhost:5000", // Production frontend URL
 ].filter(Boolean);
 
-/**
- * Enable CORS
- */
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true); // Postman / mobile apps
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (mobile apps, Postman, etc.)
-      if (!origin) return callback(null, true);
+    const isAllowed =
+      allowedOrigins.includes(origin) ||
+      /^https:\/\/skill-bridge-client-three.*\.vercel\.app$/.test(origin) ||
+      /^https:\/\/.*\.vercel\.app$/.test(origin); // Vercel preview
 
-      // Check if origin is in allowedOrigins or matches Vercel preview pattern
-      const isAllowed =
-        allowedOrigins.includes(origin) ||
-        /^https:\/\/skill-bridge-client-three.*\.vercel\.app$/.test(origin) ||
-        /^https:\/\/.*\.vercel\.app$/.test(origin); // Any Vercel deployment
+    if (isAllowed) callback(null, true);
+    else callback(new Error(`Origin ${origin} not allowed by CORS`));
+  },
+  credentials: true,
+  methods: ["GET","POST","PUT","DELETE","PATCH","OPTIONS"],
+  allowedHeaders: ["Content-Type","Authorization","Cookie"],
+  exposedHeaders: ["Set-Cookie"],
+}));
 
-      if (isAllowed) {
-        callback(null, true);
-      } else {
-        callback(new Error(`Origin ${origin} not allowed by CORS`));
-      }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
-    exposedHeaders: ["Set-Cookie"],
-  }),
-);
+
 
 /**
  * Authentication proxy routes

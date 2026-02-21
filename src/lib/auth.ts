@@ -1,15 +1,34 @@
 import { betterAuth } from "better-auth";
+import { bearer } from "better-auth/plugins";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma.js";
 
+const productionOrigins = [
+  process.env.APP_URL,
+  process.env.PROD_APP_URL,
+].filter(Boolean) as string[];
+
 export const auth = betterAuth({
+  baseURL: process.env.BETTER_AUTH_URL,
   database: prismaAdapter(prisma, {
-    provider: "postgresql", // or "mysql", "postgresql", ...etc
+    provider: "postgresql",
   }),
+  plugins: [
+        bearer(), // <--- Add this here
+    ],
   trustedOrigins:
     process.env.NODE_ENV === "production"
-      ? [process.env.APP_URL || "http://localhost:5000"]
+      ? productionOrigins
       : ["*"],
+  // --- ADD THIS SECTION ---
+  cookie: {
+      name: "better-auth",
+      attributes: {
+        sameSite: "none", // Allows cross-site cookie sharing
+        secure: true,     // Required when sameSite is 'none'
+      }
+    },    
+  basePath: "/api/auth",    
   user: {
     additionalFields: {
       role: {
@@ -22,7 +41,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  session: {
+ session: {
     cookieCache: {
       enabled: true,
       maxAge: 5 * 60, // 5 minutes

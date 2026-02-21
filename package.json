@@ -2,14 +2,13 @@
   "name": "skill-bridge-server",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/server.js",
+  "main": "src/server.ts",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx tsx watch src/server.ts",
-    "build": "prisma generate --schema=./prisma/schema/schema.prisma && tsup src/server.ts --format esm --clean --out-dir dist",
-    "start": "node dist/server.js",
-    "postinstall": "prisma generate --schema=./prisma/schema/schema.prisma"
+    "build": "prisma generate && tsup src/server.ts --format esm --platform node --target node20 --outDir api --external pg-native",
+    "postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "",

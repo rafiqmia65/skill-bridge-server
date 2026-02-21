@@ -21,3 +21,6 @@ async function startServer() {
 }
 
 startServer();
+
+// Required for Vercel serverless deployment
+export default app;
